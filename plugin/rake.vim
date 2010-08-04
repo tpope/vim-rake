@@ -36,6 +36,21 @@ function! s:shellslash(path)
   endif
 endfunction
 
+function! s:completion_filter(results,A)
+  let results = sort(copy(a:results))
+  call filter(results,'v:val !~# "\\~$"')
+  let filtered = filter(copy(results),'v:val[0:strlen(a:A)-1] ==# a:A')
+  if !empty(filtered) | return filtered | endif
+  let regex = s:gsub(a:A,'[^/:]','[&].*')
+  let filtered = filter(copy(results),'v:val =~# "^".regex')
+  if !empty(filtered) | return filtered | endif
+  let filtered = filter(copy(results),'"/".v:val =~# "[/:]".regex')
+  if !empty(filtered) | return filtered | endif
+  let regex = s:gsub(a:A,'.','[&].*')
+  let filtered = filter(copy(results),'"/".v:val =~# regex')
+  return filtered
+endfunction
+
 function! s:throw(string) abort
   let v:errmsg = 'rake: '.a:string
   throw v:errmsg
@@ -265,7 +280,7 @@ function! s:Rake(bang,arg)
 endfunction
 
 function! s:RakeComplete(A,L,P)
-  return join(s:project().tasks(),"\n")
+  return s:completion_filter(s:project().tasks(),a:A)
 endfunction
 
 function! s:project_tasks()
@@ -285,7 +300,7 @@ endfunction
 
 call s:add_methods('project',['tasks'])
 
-call s:command("-bar -bang -nargs=? -complete=custom,s:RakeComplete Rake :execute s:Rake('<bang>',<f-args>)")
+call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<f-args>)")
 
 " }}}1
 " Rcd, Rlcd {{{1
@@ -416,7 +431,7 @@ function! s:Rlib(file)
 endfunction
 
 function! s:RlibComplete(A,L,P)
-  return s:project().relglob('lib/',a:A.'**/*','.rb')
+  return s:completion_filter(s:project().relglob('lib/','**/*','.rb'),a:A)
 endfunction
 
 function! s:first_file(choices)
@@ -440,7 +455,7 @@ function! s:Rtest(...)
 endfunction
 
 function! s:RtestComplete(A,L,P)
-  return sort(s:project().relglob('test/',a:A.'**/*','_test.rb')+s:project().relglob('spec/',a:A.'**/*','_spec.rb'))
+  return s:completion_filter(s:project().relglob('test/','**/*','_test.rb')+s:project().relglob('spec/','**/*','_spec.rb'),a:A)
 endfunction
 
 function! s:Rspec(...)
@@ -448,7 +463,7 @@ function! s:Rspec(...)
 endfunction
 
 function! s:RspecComplete(A,L,P)
-  return sort(s:project().relglob('spec/',a:A.'**/*','_spec.rb')+s:project().relglob('test/',a:A.'**/*','_test.rb'))
+  return s:completion_filter(s:project().relglob('spec/','**/*','_spec.rb')+s:project().relglob('test/','**/*','_test.rb'),a:A)
 endfunction
 
 call s:navcommand('lib')
