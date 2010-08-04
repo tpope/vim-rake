@@ -36,6 +36,10 @@ function! s:shellslash(path)
   endif
 endfunction
 
+function! s:fuzzyglob(arg)
+  return s:gsub(s:gsub(a:arg,'[^/.]','[&]*'),'%(/|^)\.@!|\.','&*')
+endfunction
+
 function! s:completion_filter(results,A)
   let results = sort(copy(a:results))
   call filter(results,'v:val !~# "\\~$"')
@@ -392,7 +396,7 @@ function! s:R(cmd,bang,...) abort
 endfunction
 
 function! s:RComplete(A,L,P) abort
-  return s:project().relglob('',a:A.'*')
+  return s:completion_filter(s:project().relglob('',s:fuzzyglob(a:A).'*'),a:A)
 endfunction
 
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete R  :execute s:R('E','<bang>',<f-args>)")
