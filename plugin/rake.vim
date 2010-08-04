@@ -416,7 +416,7 @@ function! s:Rlib(file)
 endfunction
 
 function! s:RlibComplete(A,L,P)
-  return s:project().relglob('lib/',a:A.'*','.rb')
+  return s:project().relglob('lib/',a:A.'**','.rb')
 endfunction
 
 function! s:first_file(choices)
@@ -440,7 +440,7 @@ function! s:Rtest(...)
 endfunction
 
 function! s:RtestComplete(A,L,P)
-  return sort(s:project().relglob('test/',a:A.'*','_test.rb')+s:project().relglob('spec/',a:A.'*','_spec.rb'))
+  return sort(s:project().relglob('test/',a:A.'**','_test.rb')+s:project().relglob('spec/',a:A.'**','_spec.rb'))
 endfunction
 
 function! s:Rspec(...)
@@ -448,7 +448,7 @@ function! s:Rspec(...)
 endfunction
 
 function! s:RspecComplete(A,L,P)
-  return sort(s:project().relglob('spec/',a:A.'*','_spec.rb')+s:project().relglob('test/',a:A.'*','_test.rb'))
+  return sort(s:project().relglob('spec/',a:A.'**','_spec.rb')+s:project().relglob('test/',a:A.'**','_test.rb'))
 endfunction
 
 call s:navcommand('lib')
