@@ -66,6 +66,12 @@ COMMANDS                                        *rake-commands*
                         between this command and |:Rtest| is which gets
                         precedence when both files exist.
 
+                                               *rake-:Rtags*
+:Rtags                  Invoke ctags for the project.  Ordinarily it will
+                        place the resulting tags file in the root of the
+                        project, but if the directory is read only (e.g., a
+                        system gem), it will be placed in a temp file instead.
+
 ABOUT                                           *rake-about*
 
 Grab the latest version or report a bug on GitHub:

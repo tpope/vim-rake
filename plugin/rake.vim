@@ -20,6 +20,14 @@ function! s:gsub(str,pat,rep) abort
   return substitute(a:str,'\v\C'.a:pat,a:rep,'g')
 endfunction
 
+function! s:shellesc(arg) abort
+  if a:arg =~ '^[A-Za-z0-9_/.-]\+$'
+    return a:arg
+  else
+    return shellescape(a:arg)
+  endif
+endfunction
+
 function! s:fnameescape(file) abort
   if exists('*fnameescape')
     return fnameescape(a:file)
@@ -473,6 +481,49 @@ endfunction
 call s:navcommand('lib')
 call s:navcommand('test')
 call s:navcommand('spec')
+
+" }}}1
+" Rtags {{{1
+
+function! s:project_tags_file() dict abort
+  if filewritable(self.path())
+    return self.path('tags')
+  else
+    if !has_key(self,'_tags_file')
+      let self._tags_file = tempname()
+    endif
+  endif
+  return self._tags_file
+endfunction
+
+call s:add_methods('project',['tags_file'])
+
+function! s:Tags(args)
+  if exists("g:Tlist_Ctags_Cmd")
+    let cmd = g:Tlist_Ctags_Cmd
+  elseif executable("exuberant-ctags")
+    let cmd = "exuberant-ctags"
+  elseif executable("ctags-exuberant")
+    let cmd = "ctags-exuberant"
+  elseif executable("ctags")
+    let cmd = "ctags"
+  elseif executable("ctags.exe")
+    let cmd = "ctags.exe"
+  else
+    call s:throw("ctags not found")
+  endif
+  return escape('!'.cmd.' -f '.s:shellesc(s:project().tags_file()).' -R '.s:shellesc(s:project().path()),'%#').' '.a:args
+endfunction
+
+call s:command("-bar -bang -nargs=? Rtags :execute s:Tags(<q-args>)")
+
+augroup rake_tags
+  autocmd User Rake
+        \ if s:project().path() !~# ',' &&
+        \     stridx(&tags, s:project().tags_file()) < 0 |
+        \   let &l:tags .= ',' . s:project().tags_file() |
+        \ endif
+augroup END
 
 " }}}1
 
