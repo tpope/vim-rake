@@ -420,7 +420,7 @@ function! s:RlibComplete(A,L,P)
 endfunction
 
 function! s:first_file(choices)
-  return call(s:project().first_file,choices,s:project())
+  return call(s:project().first_file,a:choices,s:project())
 endfunction
 
 function! s:Rtestorspec(order,file)
