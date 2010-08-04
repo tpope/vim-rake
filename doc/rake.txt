@@ -1,0 +1,75 @@
+*rake.vim*  It's like rails.vim without the rails
+
+Author:  Tim Pope <vimNOSPAM@tpope.org>         *rake-author*
+License: Same terms as Vim itself (see |license|)
+
+This plugin is only available if 'compatible' is not set.
+
+INTRODUCTION                                    *rake*
+
+This plugin is designed to let you use your favorite rails.vim commands in a
+plain old Ruby project.
+
+Projects are detected by searching for a Rakefile up the directory hierarchy.
+Projects without a Rakefile will also be detected if they sit inside
+$GEM_PATH, making this plugin ideal for "gem open" or "bundle open".
+
+COMMANDS                                        *rake-commands*
+
+                                                *rake-:Rake*
+:Rake [task]            Invoke |:make| followed by |:cwindow| with rake as the
+                        'makeprg'.
+
+                                                *rake-:Rcd*
+:Rcd [directory]        |:cd| relative to the project.
+
+                                                *rake-:Rlcd*
+:Rlcd [directory]       |:lcd| relative to the project.
+
+                                                *rake-:R*
+:R [file]               With no argument, edits the "related" file (the test
+                        for an implementation file and vice versa).  With an
+                        argument, edit that file, relative to the Gem's root.
+
+                                                *rake-:RS*
+:RS [file]              Like |:R|, but horizontally split.
+
+                                                *rake-:RV*
+:RV [file]              Like |:R|, but vertically split.
+
+                                                *rake-:RT*
+:RT [file]              Like |:R|, but use a new tab.
+
+                                                *rake-:RD*
+:RD [file]              Like |:R|, but :read the file in.
+
+                        *rake-:A* *rake-:AS* *rake-:AV* *rake-:AT* *rake-:AD*
+:A                      Unlike in rails.vim, these are identical to their :R
+:AS                     counterparts.
+:AV
+:AT
+:AD
+
+                                                *rake-:Rlib*
+:Rlib [file]            Edit a Ruby file under lib/.  Variants exist for
+                        :RSlib, :RVlib, :RTlib, and :RDlib.
+
+                                                *rake-:Rtest*
+:Rtest [file]           Edit a test file under test/ or a spec file under
+                        spec/. Defaults to the test helper or spec helper.
+                        Has the same variants as |:Rlib|.
+
+                                                *rake-:Rspec*
+:Rspec [file]           Edit a spec file under spec/ or a test file under
+                        test/. Defaults to the spec helper or test helper.
+                        Has the same variants as |:Rlib|.  The only difference
+                        between this command and |:Rtest| is which gets
+                        precedence when both files exist.
+
+ABOUT                                           *rake-about*
+
+Grab the latest version or report a bug on GitHub:
+
+http://github.com/tpope/vim-rake
+
+ vim:tw=78:et:ft=help:norl:
