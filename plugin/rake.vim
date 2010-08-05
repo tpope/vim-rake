@@ -438,7 +438,7 @@ endfunction
 
 function! s:Rlib(file)
   if a:file ==# ''
-    return 'Rakefile'
+    return 'Gemfile'
   elseif a:file =~# '/$'
     return 'lib/'.a:file
   else
@@ -482,9 +482,24 @@ function! s:RspecComplete(A,L,P)
   return s:completion_filter(s:project().relglob('spec/','**/*','_spec.rb')+s:project().relglob('test/','**/*','_test.rb'),a:A)
 endfunction
 
+function! s:Rtask(file)
+  if a:file ==# ''
+    return 'Rakefile'
+  elseif a:file =~# '/$'
+    return 'rakelib/'.a:file
+  else
+    return 'rakelib/'.a:file.'.rake'
+  endif
+endfunction
+
+function! s:RtaskComplete(A,L,P)
+  return s:completion_filter(s:project().relglob('rakelib/','**/*','.rake'),a:A)
+endfunction
+
 call s:navcommand('lib')
 call s:navcommand('test')
 call s:navcommand('spec')
+call s:navcommand('task')
 
 " }}}1
 " Rtags {{{1

@@ -51,8 +51,9 @@ COMMANDS                                        *rake-commands*
 :AD
 
                                                 *rake-:Rlib*
-:Rlib [file]            Edit a Ruby file under lib/.  Variants exist for
-                        :RSlib, :RVlib, :RTlib, and :RDlib.
+:Rlib [file]            Edit a Ruby file under lib/, or Gemfile if no argument
+                        is given.  Variants exist for :RSlib, :RVlib, :RTlib,
+                        and :RDlib.
 
                                                 *rake-:Rtest*
 :Rtest [file]           Edit a test file under test/ or a spec file under
@@ -65,6 +66,10 @@ COMMANDS                                        *rake-commands*
                         Has the same variants as |:Rlib|.  The only difference
                         between this command and |:Rtest| is which gets
                         precedence when both files exist.
+
+                                                *rake-:Rlib*
+:Rtask [file]           Edit a .rake file under rakelib/, or Rakefile if no
+                        argument is given.  Has the same variants as |:Rlib|.
 
                                                *rake-:Rtags*
 :Rtags                  Invoke ctags for the project.  Ordinarily it will
