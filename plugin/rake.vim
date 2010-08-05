@@ -330,7 +330,11 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Rlcd :lcd
 function! s:buffer_related() dict abort
   if self.name() =~# '^lib/'
     let bare = s:sub(self.name()[4:-1],'\.rb$','')
-    return s:first_file('test/'.bare.'_test.rb','spec/'.bare.'_spec.rb')
+    return s:project().first_file(
+          \'test/'.bare.'_test.rb',
+          \'spec/'.bare.'_spec.rb',
+          \'test/unit/'.bare.'_test.rb',
+          \'spec/unit/'.bare.'_spec.rb')
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
     return 'lib/'.self.name()[5:-9].'.rb'
   endif
