@@ -57,12 +57,12 @@ COMMANDS                                        *rake-commands*
 
                                                 *rake-:Rtest*
 :Rtest [file]           Edit a test file under test/ or a spec file under
-                        spec/. Defaults to the test helper or spec helper.
+                        spec/.  Defaults to the test helper or spec helper.
                         Has the same variants as |:Rlib|.
 
                                                 *rake-:Rspec*
 :Rspec [file]           Edit a spec file under spec/ or a test file under
-                        test/. Defaults to the spec helper or test helper.
+                        test/.  Defaults to the spec helper or test helper.
                         Has the same variants as |:Rlib|.  The only difference
                         between this command and |:Rtest| is which gets
                         precedence when both files exist.
