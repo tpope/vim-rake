@@ -312,7 +312,7 @@ endfunction
 
 call s:add_methods('project',['tasks'])
 
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<f-args>)")
+call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<q-args>)")
 
 " }}}1
 " Rcd, Rlcd {{{1
