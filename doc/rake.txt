@@ -67,7 +67,7 @@ COMMANDS                                        *rake-commands*
                         between this command and |:Rtest| is which gets
                         precedence when both files exist.
 
-                                                *rake-:Rlib*
+                                                *rake-:Rtask*
 :Rtask [file]           Edit a .rake file under rakelib/, or Rakefile if no
                         argument is given.  Has the same variants as |:Rlib|.
 
