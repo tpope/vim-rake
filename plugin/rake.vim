@@ -113,8 +113,12 @@ function! s:FindRakeRoot(path) abort
   let ofn = ""
   let nfn = fn
   while fn != ofn
-    if filereadable(fn.'/Rakefile') && !filereadable(fn.'/config/environment.rb')
-      return s:sub(simplify(fnamemodify(fn,':p')),'[\\/]$','')
+    if filereadable(fn.'/Rakefile')
+      if filereadable(fn.'/config/environment.rb')
+        return ''
+      else
+        return s:sub(simplify(fnamemodify(fn,':p')),'[\\/]$','')
+      endif
     endif
     let ofn = fn
     let fn = fnamemodify(ofn,':h')
