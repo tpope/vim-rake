@@ -286,8 +286,9 @@ function! s:Rake(bang,arg)
           \.'%m\ [%f:%l]:'
     execute 'make! '.a:arg
     if a:bang !=# '!'
-      cwindow
+      return 'cwindow'
     endif
+    return ''
   finally
     let &l:errorformat = old_errorformat
     let &l:makeprg = old_makeprg
