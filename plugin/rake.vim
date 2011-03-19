@@ -542,6 +542,7 @@ endfunction
 call s:command("-bar -bang -nargs=? Rtags :execute s:Tags(<q-args>)")
 
 augroup rake_tags
+  autocmd!
   autocmd User Rake
         \ if s:project().path() !~# ',' &&
         \     stridx(&tags, s:project().tags_file()) < 0 |
