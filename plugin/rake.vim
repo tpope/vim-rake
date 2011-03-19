@@ -551,5 +551,17 @@ augroup rake_tags
 augroup END
 
 " }}}1
+" Path {{{1
+
+augroup rake_path
+  autocmd!
+  autocmd User Rake
+        \ if s:project().path() !~# ',' &&
+        \     stridx(&path, s:project().path('lib')) < 0 |
+        \   let &l:path = s:project().path('lib') . ',' . &l:path |
+        \ endif
+augroup END
+
+" }}}1
 
 " vim:set sw=2 sts=2:
