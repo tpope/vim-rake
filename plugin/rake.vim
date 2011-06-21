@@ -342,6 +342,10 @@ function! s:buffer_related() dict abort
           \'spec/unit/'.bare.'_spec.rb')
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
     return 'lib/'.self.name()[5:-9].'.rb'
+  elseif self.name() ==# 'Gemfile'
+    return 'Gemfile.lock'
+  elseif self.name() ==# 'Gemfile.lock'
+    return 'Gemfile'
   endif
   return ''
 endfunction
