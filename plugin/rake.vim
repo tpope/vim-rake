@@ -1,5 +1,5 @@
 " rake.vim - It's like rails.vim without the rails
-" Maintainer:   Tim Pope <vimNOSPAM@tpope.org>
+" Maintainer:   Tim Pope <http://tpo.pe/>
 " Version:      1.0
 " GetLatestVimScripts: 3669 1 :AutoInstall: rake.vim
 

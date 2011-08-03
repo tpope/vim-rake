@@ -1,6 +1,6 @@
 *rake.vim*  It's like rails.vim without the rails
 
-Author:  Tim Pope <vimNOSPAM@tpope.org>         *rake-author*
+Author:  Tim Pope <http://tpo.pe/>
 License: Same terms as Vim itself (see |license|)
 
 This plugin is only available if 'compatible' is not set.
