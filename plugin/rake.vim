@@ -516,7 +516,7 @@ call s:navcommand('task')
 " Rtags {{{1
 
 function! s:project_tags_file() dict abort
-  if filewritable(self.path())
+  if filereadable(self.path('tags')) || filewritable(self.path())
     return self.path('tags')
   else
     if !has_key(self,'_tags_file')
