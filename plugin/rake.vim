@@ -550,9 +550,8 @@ call s:command("-bar -bang -nargs=? Rtags :execute s:Tags(<q-args>)")
 augroup rake_tags
   autocmd!
   autocmd User Rake
-        \ if s:project().path() !~# ',' &&
-        \     stridx(&tags, s:project().tags_file()) < 0 |
-        \   let &l:tags = s:project().tags_file() . ',' . &tags |
+        \ if stridx(&tags, escape(s:project().tags_file(),', ')) < 0 |
+        \   let &l:tags = escape(s:project().tags_file(),', ') . ',' . &tags |
         \ endif
 augroup END
 
