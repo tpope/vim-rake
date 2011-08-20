@@ -44,7 +44,7 @@ See the contribution guidelines for
 Self-Promotion
 --------------
 
-Like rails.vim? Follow the repository on
+Like rake.vim? Follow the repository on
 [GitHub](https://github.com/tpope/vim-rake) and vote for it on
 [vim.org](http://www.vim.org/scripts/script.php?script_id=3669).  And if
 you're feeling especially charitable, follow [tpope](http://tpo.pe/) on
