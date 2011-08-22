@@ -566,7 +566,8 @@ augroup rake_path
   autocmd!
   autocmd User Rake
         \ if &suffixesadd =~# '\.rb\>' && stridx(&path, escape(s:project().path('lib'),', ')) < 0 |
-        \   let &l:path = escape(s:project().path('lib'),', ') . ',' . &path |
+        \   let &l:path = escape(s:project().path('lib'),', ')
+        \     . ',' . escape(s:project().path('ext'),', ') . ',' . &path |
         \ endif
 augroup END
 
