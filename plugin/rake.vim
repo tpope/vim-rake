@@ -273,7 +273,7 @@ function! s:Rake(bang,arg)
   let old_errorformat = &l:errorformat
   call s:push_chdir()
   try
-    if exists('b:bundle_root') && b:bundle_root == s:project().path()
+    if exists('b:bundle_root') && b:bundler_root ==# s:project().path()
       let &l:makeprg = 'bundle exec rake'
     else
       let &l:makeprg = 'rake'
