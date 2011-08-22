@@ -273,7 +273,11 @@ function! s:Rake(bang,arg)
   let old_errorformat = &l:errorformat
   call s:push_chdir()
   try
-    let &l:makeprg = 'rake'
+    if exists('b:bundle_root') && b:bundle_root == s:project().path()
+      let &l:makeprg = 'bundle exec rake'
+    else
+      let &l:makeprg = 'rake'
+    endif
     let &l:errorformat = '%D(in\ %f),'
           \.'%\\s%#from\ %f:%l:%m,'
           \.'%\\s%#from\ %f:%l:,'

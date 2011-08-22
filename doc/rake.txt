@@ -18,7 +18,8 @@ COMMANDS                                        *rake-commands*
 
                                                 *rake-:Rake*
 :Rake [task]            Invoke |:make| followed by |:cwindow| with rake as the
-                        'makeprg'.
+                        'makeprg'.  Uses `bundle exec rake` if bundler.vim is
+                        installed and active for the current project.
 
                                                 *rake-:Rcd*
 :Rcd [directory]        |:cd| relative to the project.
