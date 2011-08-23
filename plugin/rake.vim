@@ -453,7 +453,7 @@ endfunction
 
 function! s:Rlib(file)
   if a:file ==# ''
-    return 'Gemfile'
+    return get(s:project().relglob('','*.gemspec'),0,'Gemfile')
   elseif a:file =~# '/$'
     return 'lib/'.a:file
   else
