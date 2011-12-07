@@ -1,4 +1,4 @@
-*rake.vim*  It's like rails.vim without the rails
+*rake.txt*  It's like rails.vim without the rails
 
 Author:  Tim Pope <http://tpo.pe/>
 License: Same terms as Vim itself (see |license|)
