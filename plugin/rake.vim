@@ -153,7 +153,7 @@ function! s:project(...) abort
     if has_key(s:projects, dir)
       let project = get(s:projects, dir)
     else
-      let project = {'root': dir}
+      let project = {'_root': dir}
       let s:projects[dir] = project
     endif
     return extend(extend(project, s:project_prototype, 'keep'), s:abstract_prototype, 'keep')
@@ -162,7 +162,7 @@ function! s:project(...) abort
 endfunction
 
 function! s:project_path(...) dict abort
-  return join([self.root]+a:000,'/')
+  return join([self._root]+a:000,'/')
 endfunction
 
 call s:add_methods('project',['path'])
