@@ -104,37 +104,27 @@ let s:abstract_prototype = {}
 " }}}1
 " Initialization {{{1
 
-function! s:FindRakeRoot(path) abort
-  let path = s:shellslash(a:path)
-  for p in [$GEM_HOME] + split($GEM_PATH,':')
-    if p !=# '' && s:shellslash(p.'/gems/') ==# (path)[0 : strlen(p)+5]
-      return simplify(s:shellslash(p.'/gems/')).matchstr(path[strlen(p)+6:-1],'[^\\/]*')
-    endif
-  endfor
-  let fn = fnamemodify(path,':s?[\/]$??')
-  let ofn = ""
-  let nfn = fn
-  while fn != ofn
-    if filereadable(fn.'/Rakefile')
-      if filereadable(fn.'/config/environment.rb')
+function! s:find_root(path) abort
+  let root = s:shellslash(simplify(fnamemodify(a:path, ':p:s?[\/]$??')))
+  let previous = ''
+  while root !=# previous && root !=# '/'
+    if filereadable(root.'/Rakefile') || (isdirectory(root.'/lib') && glob(root.'/lib/*.rb') !=# '')
+      if filereadable(root.'/config/environment.rb')
         return ''
       else
-        return s:sub(simplify(fnamemodify(fn,':p')),'[\\/]$','')
+        return root
       endif
     endif
-    let ofn = fn
-    let fn = fnamemodify(ofn,':h')
+    let previous = root
+    let root = fnamemodify(root, ':h')
   endwhile
   return ''
 endfunction
 
 function! s:Detect(path)
-  if exists('b:rake_root') && b:rake_root ==# ''
-    unlet b:rake_root
-  endif
   if !exists('b:rake_root')
-    let dir = s:FindRakeRoot(a:path)
-    if dir != ''
+    let dir = s:find_root(a:path)
+    if dir !=# ''
       let b:rake_root = dir
     endif
   endif
@@ -147,6 +137,7 @@ augroup rake
   autocmd!
   autocmd BufNewFile,BufReadPost * call s:Detect(expand('<amatch>:p'))
   autocmd FileType           netrw call s:Detect(expand('<afile>:p'))
+  autocmd User NERDTreeInit,NERDTreeNewRoot call s:Detect(b:NERDTreeRoot.path.str())
   autocmd VimEnter * if expand('<amatch>')==''|call s:Detect(getcwd())|endif
 augroup END
 
@@ -157,15 +148,15 @@ let s:project_prototype = {}
 let s:projects = {}
 
 function! s:project(...) abort
-  let dir = a:0 ? a:1 : (exists('b:rake_root') && b:rake_root !=# '' ? b:rake_root : s:FindRakeRoot(expand('%:p')))
+  let dir = a:0 ? a:1 : (exists('b:rake_root') && b:rake_root !=# '' ? b:rake_root : s:find_root(expand('%:p')))
   if dir !=# ''
-    if has_key(s:projects,dir)
-      let project = get(s:projects,dir)
+    if has_key(s:projects, dir)
+      let project = get(s:projects, dir)
     else
       let project = {'root': dir}
       let s:projects[dir] = project
     endif
-    return extend(extend(project,s:project_prototype,'keep'),s:abstract_prototype,'keep')
+    return extend(extend(project, s:project_prototype, 'keep'), s:abstract_prototype, 'keep')
   endif
   call s:throw('not a rake project: '.expand('%:p'))
 endfunction
