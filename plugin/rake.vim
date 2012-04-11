@@ -106,9 +106,14 @@ let s:abstract_prototype = {}
 
 function! s:find_root(path) abort
   let root = s:shellslash(simplify(fnamemodify(a:path, ':p:s?[\/]$??')))
+  for p in [$GEM_HOME] + split($GEM_PATH,':')
+    if p !=# '' && s:shellslash(p.'/gems/') ==# (root)[0 : strlen(p)+5]
+      return simplify(s:shellslash(p.'/gems/')).matchstr(root[strlen(p)+6:-1],'[^\\/]*')
+    endif
+  endfor
   let previous = ''
   while root !=# previous && root !=# '/'
-    if filereadable(root.'/Rakefile') || (isdirectory(root.'/lib') && glob(root.'/lib/*.rb') !=# '')
+    if filereadable(root.'/Rakefile') || (isdirectory(root.'/lib') && filereadable(root.'/Gemfile'))
       if filereadable(root.'/config/environment.rb')
         return ''
       else
