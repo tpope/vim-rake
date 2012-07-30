@@ -246,7 +246,15 @@ function! s:buffer_path() dict abort
   return s:shellslash(bufname == '' ? '' : fnamemodify(bufname,':p'))
 endfunction
 
-call s:add_methods('buffer',['getvar','setvar','getline','project','name','path'])
+function! s:buffer_relative() dict abort
+  return self.name()
+endfunction
+
+function! s:buffer_absolute() dict abort
+  return self.path()
+endfunction
+
+call s:add_methods('buffer',['getvar','setvar','getline','project','name','path','relative','absolute'])
 
 " }}}1
 " Rake {{{1
