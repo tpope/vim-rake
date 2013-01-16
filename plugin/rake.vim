@@ -133,7 +133,7 @@ function! s:Detect(path)
       let b:rake_root = dir
     endif
   endif
-  if exists('b:rake_root')
+  if exists('b:rake_root') && &ft == "ruby"
     silent doautocmd User Rake
   endif
 endfunction
