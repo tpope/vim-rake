@@ -2,7 +2,7 @@
 
 With rake.vim, you can use all those parts of [rails.vim][] that you wish you
 could use on your other Ruby projects on anything with a `Rakefile`, including
-`:A`, `:Rlib` and friends, and of course `:Rake`.  It's great when paired with
+`:A`, `:Elib` and friends, and of course `:Rake`.  It's great when paired with
 [`gem open`][gem-browse] and `bundle open` and complemented nicely by
 [bundler.vim][].
 
@@ -33,7 +33,7 @@ directory.  Edit a file from a Ruby library.
 > I opened a new tab.  Why don't any of the commands exist?
 
 This plugin cares about the current file, not the current working
-directory.  Edit a file from a Ruby library.  You can use the `:RT`
+directory.  Edit a file from a Ruby library.  You can use the `:T`
 family of commands to open a new tab and edit a file at the same time.
 
 ## Self-Promotion

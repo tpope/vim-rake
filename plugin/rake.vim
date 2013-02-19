@@ -330,7 +330,7 @@ call s:add_methods('project',['tasks'])
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<q-args>)")
 
 " }}}1
-" Rcd, Rlcd {{{1
+" Cd, Lcd {{{1
 
 function! s:DirComplete(A,L,P) abort
   return s:project().dirglob(a:A)
@@ -342,7 +342,7 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Cd   :cd<
 call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Lcd  :lcd<bang> `=s:project().path(<q-args>)`")
 
 " }}}1
-" R {{{1
+" A {{{1
 
 function! s:buffer_related() dict abort
   if self.name() =~# '^lib/'
@@ -456,7 +456,7 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AT :execute
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AD :execute s:R('D','<bang>',<f-args>)")
 
 " }}}1
-" Rlib, etc. {{{1
+" Elib, etc. {{{1
 
 function! s:navcommand(name) abort
   for type in ['E', 'S', 'V', 'T', 'D']
@@ -536,7 +536,7 @@ call s:navcommand('spec')
 call s:navcommand('task')
 
 " }}}1
-" Rtags {{{1
+" Ctags {{{1
 
 function! s:project_tags_file() dict abort
   if filereadable(self.path('tags')) || filewritable(self.path())
@@ -570,6 +570,7 @@ endfunction
 
 call s:command("-bar -bang -nargs=? Rtags :execute s:Tags(<q-args>)")
 call s:command("-bar -bang -nargs=? Ctags :execute s:Tags(<q-args>)")
+call s:command("-bar -bang -nargs=? Tags  :execute s:Tags(<q-args>)")
 
 augroup rake_tags
   autocmd!

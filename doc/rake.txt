@@ -16,33 +16,36 @@ $GEM_PATH, making this plugin ideal for "gem open" or "bundle open".
 
 COMMANDS                                        *rake-commands*
 
+All commands except |:Rake| support an alternate form that starts with R, for
+backwards compatibility.
+
                                                 *rake-:Rake*
 :Rake [task]            Invoke |:make| followed by |:cwindow| with rake as the
                         'makeprg'.  Uses `bundle exec rake` if bundler.vim is
                         installed and active for the current project.
 
-                                                *rake-:Rcd*
-:Rcd [directory]        |:cd| relative to the project.
+                                                *rake-:Cd* *rake-:Rcd*
+:Cd [directory]         |:cd| relative to the project.
 
-                                                *rake-:Rlcd*
-:Rlcd [directory]       |:lcd| relative to the project.
+                                                *rake-:Lcd* *rake-:Rlcd*
+:Lcd [directory]        |:lcd| relative to the project.
 
-                                                *rake-:R*
-:R [file]               With no argument, edits the "related" file (the test
+                                                *rake-:E* *rake-:R*
+:E [file]               With no argument, edits the "related" file (the test
                         for an implementation file and vice versa).  With an
                         argument, edit that file, relative to the Gem's root.
 
-                                                *rake-:RS*
-:RS [file]              Like |:R|, but horizontally split.
+                                                *rake-:S* *rake-:RS*
+:S [file]               Like |:E|, but horizontally split.
 
-                                                *rake-:RV*
-:RV [file]              Like |:R|, but vertically split.
+                                                *rake-:V* *rake-:RV*
+:V [file]               Like |:E|, but vertically split.
 
-                                                *rake-:RT*
-:RT [file]              Like |:R|, but use a new tab.
+                                                *rake-:T* *rake-:RT*
+:T [file]               Like |:E|, but use a new tab.
 
-                                                *rake-:RD*
-:RD [file]              Like |:R|, but :read the file in.
+                                                *rake-:D* *rake-:RD*
+:D [file]               Like |:E|, but :read the file in.
 
                         *rake-:A* *rake-:AS* *rake-:AV* *rake-:AT* *rake-:AD*
 :A                      Unlike in rails.vim, these are identical to their :R
@@ -51,29 +54,29 @@ COMMANDS                                        *rake-commands*
 :AT
 :AD
 
-                                                *rake-:Rlib*
-:Rlib [file]            Edit a Ruby file under lib/, or Gemfile if no argument
+                                                *rake-:Elib* *rake-:Rlib*
+:Elib [file]            Edit a Ruby file under lib/, or Gemfile if no argument
                         is given.  Variants exist for :RSlib, :RVlib, :RTlib,
                         and :RDlib.
 
-                                                *rake-:Rtest*
-:Rtest [file]           Edit a test file under test/ or a spec file under
+                                                *rake-:Etest* *rake-:Rtest*
+:Etest [file]           Edit a test file under test/ or a spec file under
                         spec/.  Defaults to the test helper or spec helper.
                         Has the same variants as |:Rlib|.
 
-                                                *rake-:Rspec*
-:Rspec [file]           Edit a spec file under spec/ or a test file under
+                                                *rake-:Espec* *rake-:Rspec*
+:Espec [file]           Edit a spec file under spec/ or a test file under
                         test/.  Defaults to the spec helper or test helper.
                         Has the same variants as |:Rlib|.  The only difference
                         between this command and |:Rtest| is which gets
                         precedence when both files exist.
 
-                                                *rake-:Rtask*
-:Rtask [file]           Edit a .rake file under rakelib/, or Rakefile if no
+                                                *rake-:Etask* *rake-:Rtask*
+:Etask [file]           Edit a .rake file under rakelib/, or Rakefile if no
                         argument is given.  Has the same variants as |:Rlib|.
 
-                                               *rake-:Rtags*
-:Rtags                  Invoke ctags for the project.  Ordinarily it will
+                                                *rake-:Ctags* *rake-:Rtags*
+:Ctags                  Invoke ctags for the project.  Ordinarily it will
                         place the resulting tags file in the root of the
                         project, but if the directory is read only (e.g., a
                         system gem), it will be placed in a temp file instead.
