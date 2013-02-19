@@ -1,11 +1,14 @@
 # rake.vim
 
-With rake.vim, you can use all those parts of
-[rails.vim](https://github.com/tpope/vim-rails) that you wish you could
-use on your other Ruby projects on anything with a `Rakefile`, including
-`:R`/`:A`, `:Rlib` and friends, and of course `:Rake`.  It's great when
-paired with `gem open` and `bundle open` and complemented nicely by
-[bundler.vim](https://github.com/tpope/vim-bundler).
+With rake.vim, you can use all those parts of [rails.vim][] that you wish you
+could use on your other Ruby projects on anything with a `Rakefile`, including
+`:A`, `:Rlib` and friends, and of course `:Rake`.  It's great when paired with
+[`gem open`][gem-browse] and `bundle open` and complemented nicely by
+[bundler.vim][].
+
+[bundler.vim]: https://github.com/tpope/vim-bundler
+[rails.vim]: https://github.com/tpope/vim-rails
+[gem-browse]: https://github.com/tpope/gem-browse
 
 ## Installation
 
