@@ -1,5 +1,4 @@
-rake.vim
-========
+# rake.vim
 
 With rake.vim, you can use all those parts of
 [rails.vim](https://github.com/tpope/vim-rails) that you wish you could
@@ -8,8 +7,7 @@ use on your other Ruby projects on anything with a `Rakefile`, including
 paired with `gem open` and `bundle open` and complemented nicely by
 [bundler.vim](https://github.com/tpope/vim-bundler).
 
-Installation
-------------
+## Installation
 
 If you don't have a preferred installation method, I recommend
 installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
@@ -21,8 +19,7 @@ then simply copy and paste:
 Once help tags have been generated, you can view the manual with
 `:help rake`.
 
-FAQ
----
+## FAQ
 
 > I installed the plugin and started Vim.  Why don't any of the commands
 > exist?
@@ -36,14 +33,12 @@ This plugin cares about the current file, not the current working
 directory.  Edit a file from a Ruby library.  You can use the `:RT`
 family of commands to open a new tab and edit a file at the same time.
 
-Contributing
-------------
+## Contributing
 
 See the contribution guidelines for
 [rails.vim](https://github.com/tpope/vim-rails#readme).
 
-Self-Promotion
---------------
+## Self-Promotion
 
 Like rake.vim? Follow the repository on
 [GitHub](https://github.com/tpope/vim-rake) and vote for it on
@@ -52,8 +47,7 @@ you're feeling especially charitable, follow [tpope](http://tpo.pe/) on
 [Twitter](http://twitter.com/tpope) and
 [GitHub](https://github.com/tpope).
 
-License
--------
+## License
 
 Copyright (c) Tim Pope.  Distributed under the same terms as Vim itself.
 See `:help license`.
