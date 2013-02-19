@@ -36,11 +36,6 @@ This plugin cares about the current file, not the current working
 directory.  Edit a file from a Ruby library.  You can use the `:RT`
 family of commands to open a new tab and edit a file at the same time.
 
-## Contributing
-
-See the contribution guidelines for
-[rails.vim](https://github.com/tpope/vim-rails#readme).
-
 ## Self-Promotion
 
 Like rake.vim? Follow the repository on
