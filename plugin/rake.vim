@@ -119,6 +119,8 @@ function! s:find_root(path) abort
       else
         return root
       endif
+    elseif root =~# '[\/]gems[\/][0-9.]\+[\/]gems[\/][[:alnum:]._-]\+$'
+      return root
     endif
     let previous = root
     let root = fnamemodify(root, ':h')
