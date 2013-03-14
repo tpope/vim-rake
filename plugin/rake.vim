@@ -297,9 +297,13 @@ function! s:Rake(bang,arg)
       let &l:makeprg = 'rake'
     endif
     let &l:errorformat = g:rake#errorformat
-    execute 'make! '.a:arg
-    if a:bang !=# '!'
-      return 'cwindow'
+    if exists(':Make')
+      execute 'Make'.a:bang.' '.a:arg
+    else
+      execute 'make! '.a:arg
+      if a:bang !=# '!'
+        return 'cwindow'
+      endif
     endif
     return ''
   finally
