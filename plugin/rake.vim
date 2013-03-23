@@ -287,6 +287,7 @@ let g:rake#errorformat = '%D(in\ %f),'
 function! s:Rake(bang,arg)
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
+  let old_compiler = get(b:, 'current_compiler', '')
   call s:push_chdir()
   try
     if filereadable(s:project().path('bin/rake'))
@@ -309,6 +310,10 @@ function! s:Rake(bang,arg)
   finally
     let &l:errorformat = old_errorformat
     let &l:makeprg = old_makeprg
+    let b:current_compiler = old_compiler
+    if empty(old_compiler)
+      unlet! b:current_compiler
+    endif
     call s:pop_command()
   endtry
 endfunction
