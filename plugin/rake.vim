@@ -449,12 +449,6 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RV :execute
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RT :execute s:R('T','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RD :execute s:R('D','<bang>',<f-args>)")
 
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete E  :execute s:R('E','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete S  :execute s:R('S','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete V  :execute s:R('V','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete T  :execute s:R('T','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete D  :execute s:R('D','<bang>',<f-args>)")
-
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete A  :execute s:R('E','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AE :execute s:R('E','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute s:R('S','<bang>',<f-args>)")
