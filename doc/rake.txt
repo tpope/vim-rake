@@ -11,8 +11,8 @@ This plugin is designed to let you use your favorite rails.vim commands in a
 plain old Ruby project.
 
 Projects are detected by searching for a Rakefile up the directory hierarchy.
-Projects without a Rakefile will also be detected if they sit inside
-$GEM_PATH, making this plugin ideal for "gem open" or "bundle open".
+Projects without a Rakefile will also be detected if they sit inside the gem
+path, making this plugin ideal for "gem open" or "bundle open".
 
 COMMANDS                                        *rake-commands*
 
