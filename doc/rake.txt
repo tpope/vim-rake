@@ -21,8 +21,7 @@ backwards compatibility.
 
                                                 *rake-:Rake*
 :Rake [task]            Invoke |:make| followed by |:cwindow| with rake as the
-                        'makeprg'.  Uses `bundle exec rake` if bundler.vim is
-                        installed and active for the current project.
+                        'makeprg'.  Uses `bin/rake` if available.
 
                                                 *rake-:Cd* *rake-:Rcd*
 :Cd [directory]         |:cd| relative to the project.

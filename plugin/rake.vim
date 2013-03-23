@@ -290,7 +290,9 @@ function! s:Rake(bang,arg)
   let old_compiler = get(b:, 'current_compiler', '')
   call s:push_chdir()
   try
-    if filereadable(s:project().path('bin/rake'))
+    if executable(s:project().path('bin/rake'))
+      let &l:makeprg = 'bin/rake'
+    elseif filereadable(s:project().path('bin/rake'))
       let &l:makeprg = 'ruby bin/rake'
     elseif filereadable(s:project().path('Gemfile'))
       let &l:makeprg = 'bundle exec rake'
@@ -298,6 +300,7 @@ function! s:Rake(bang,arg)
       let &l:makeprg = 'rake'
     endif
     let &l:errorformat = g:rake#errorformat
+    let b:current_compiler = 'rake'
     if exists(':Make')
       execute 'Make'.a:bang.' '.a:arg
     else
