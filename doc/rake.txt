@@ -49,24 +49,24 @@ backwards compatibility.
 
                                                 *rake-:Elib* *rake-:Rlib*
 :Elib [file]            Edit a Ruby file under lib/, or Gemfile if no argument
-                        is given.  Variants exist for :RSlib, :RVlib, :RTlib,
-                        and :RDlib.
+                        is given.  Variants exist for :ESlib, :EVlib, :ETlib,
+                        and :EDlib.
 
                                                 *rake-:Etest* *rake-:Rtest*
 :Etest [file]           Edit a test file under test/ or a spec file under
                         spec/.  Defaults to the test helper or spec helper.
-                        Has the same variants as |:Rlib|.
+                        Has the same variants as |:Elib|.
 
                                                 *rake-:Espec* *rake-:Rspec*
 :Espec [file]           Edit a spec file under spec/ or a test file under
                         test/.  Defaults to the spec helper or test helper.
-                        Has the same variants as |:Rlib|.  The only difference
-                        between this command and |:Rtest| is which gets
+                        Has the same variants as |:Elib|.  The only difference
+                        between this command and |:Etest| is which gets
                         precedence when both files exist.
 
                                                 *rake-:Etask* *rake-:Rtask*
 :Etask [file]           Edit a .rake file under rakelib/, or Rakefile if no
-                        argument is given.  Has the same variants as |:Rlib|.
+                        argument is given.  Has the same variants as |:Elib|.
 
                                                 *rake-:Ctags* *rake-:Rtags*
 :Ctags                  Invoke ctags for the project.  Ordinarily it will
