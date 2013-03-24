@@ -157,7 +157,7 @@ augroup END
 let s:project_prototype = {}
 let s:projects = {}
 
-function! s:project(...) abort
+function! rake#project(...) abort
   let dir = a:0 ? a:1 : (exists('b:rake_root') && b:rake_root !=# '' ? b:rake_root : s:find_root(expand('%:p')))
   if dir !=# ''
     if has_key(s:projects, dir)
@@ -167,6 +167,14 @@ function! s:project(...) abort
       let s:projects[dir] = project
     endif
     return extend(extend(project, s:project_prototype, 'keep'), s:abstract_prototype, 'keep')
+  endif
+  return {}
+endfunction
+
+function! s:project(...)
+  let project = call('rake#project', a:000)
+  if !empty(project)
+    return project
   endif
   call s:throw('not a rake project: '.expand('%:p'))
 endfunction
