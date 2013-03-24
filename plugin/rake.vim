@@ -463,6 +463,7 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AV :execute s:R('V','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AT :execute s:R('T','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AD :execute s:R('D','<bang>',<f-args>)")
+call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AR :execute s:R('D','<bang>',<f-args>)")
 
 " }}}1
 " Elib, etc. {{{1
