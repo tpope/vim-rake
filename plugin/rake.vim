@@ -287,21 +287,27 @@ let g:rake#errorformat = '%D(in\ %f),'
       \.'%\\s%#%f:%l:,'
       \.'%m\ [%f:%l]:'
 
+function! s:project_makeprg()
+  if executable(s:project().path('bin/rake'))
+    return 'bin/rake'
+  elseif filereadable(s:project().path('bin/rake'))
+    return 'ruby bin/rake'
+  elseif filereadable(s:project().path('Gemfile'))
+    return 'bundle exec rake'
+  else
+    return 'rake'
+  endif
+endfunction
+
+call s:add_methods('project', ['makeprg'])
+
 function! s:Rake(bang,arg)
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
   let old_compiler = get(b:, 'current_compiler', '')
   call s:push_chdir()
   try
-    if executable(s:project().path('bin/rake'))
-      let &l:makeprg = 'bin/rake'
-    elseif filereadable(s:project().path('bin/rake'))
-      let &l:makeprg = 'ruby bin/rake'
-    elseif filereadable(s:project().path('Gemfile'))
-      let &l:makeprg = 'bundle exec rake'
-    else
-      let &l:makeprg = 'rake'
-    endif
+    let &l:makeprg = s:project().makeprg()
     let &l:errorformat = g:rake#errorformat
     let b:current_compiler = 'rake'
     if exists(':Make')
