@@ -610,6 +610,10 @@ augroup END
 " }}}1
 " Path {{{1
 
+if !exists('g:did_load_ftplugin')
+  filetype plugin on
+endif
+
 augroup rake_path
   autocmd!
   autocmd User Rake
