@@ -398,6 +398,11 @@ function! s:buffer_related() dict abort
     return s:project().first_file(
       \'lib/'.self.name()[5:-9].'.rb',
       \self.name()[5:-9].'.rb')
+  elseif self.name() =~# '^\(test\|spec\)/.*\1_.*\.rb$'
+    let bare = s:sub(self.name(), '^(test|spec)/(.*)\1_(.*\.rb)$', '\3\4')
+    return s:project().first_file(
+      \'lib/'.bare,
+      \bare)
   elseif self.name() ==# 'Gemfile'
     return 'Gemfile.lock'
   elseif self.name() ==# 'Gemfile.lock'
