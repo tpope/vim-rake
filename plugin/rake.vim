@@ -395,11 +395,12 @@ function! s:buffer_related() dict abort
           \'spec/unit/'.bare.'_spec.rb',
           \'spec/unit/'.dirname.'/spec_'.basename.'.rb')
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
+    let bare = s:sub(self.name(), '^(test|spec)/(unit/)?(.*)_\1\.rb$', '\3.rb')
     return s:project().first_file(
-      \'lib/'.self.name()[5:-9].'.rb',
-      \self.name()[5:-9].'.rb')
+      \'lib/'.bare,
+      \bare)
   elseif self.name() =~# '^\(test\|spec\)/.*\1_.*\.rb$'
-    let bare = s:sub(self.name(), '^(test|spec)/(.*)\1_(.*\.rb)$', '\3\4')
+    let bare = s:sub(self.name(), '^(test|spec)/(unit/)?(.*)\1_(.*\.rb)$', '\3\4')
     return s:project().first_file(
       \'lib/'.bare,
       \bare)
