@@ -379,13 +379,21 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Lcd  :lcd
 function! s:buffer_related() dict abort
   if self.name() =~# '^lib/'
     let bare = s:sub(self.name()[4:-1],'\.rb$','')
+    let dirname = fnamemodify(bare, ":h")
+    let basename = fnamemodify(bare, ":t")
     return s:project().first_file(
           \'test/'.bare.'_test.rb',
+          \'test/'.dirname.'/test_'.basename.'.rb',
           \'spec/'.bare.'_spec.rb',
+          \'spec/'.dirname.'/spec_'.basename.'.rb',
           \'test/lib/'.bare.'_test.rb',
+          \'test/lib/'.dirname.'/test_'.basename.'.rb',
           \'spec/lib/'.bare.'_spec.rb',
+          \'spec/lib/'.dirname.'/spec_'.basename.'.rb',
           \'test/unit/'.bare.'_test.rb',
-          \'spec/unit/'.bare.'_spec.rb')
+          \'test/unit/'.dirname.'/test_'.basename.'.rb',
+          \'spec/unit/'.bare.'_spec.rb',
+          \'spec/unit/'.dirname.'/spec_'.basename.'.rb')
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
     return s:project().first_file(
       \'lib/'.self.name()[5:-9].'.rb',
