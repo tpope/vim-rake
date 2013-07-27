@@ -386,6 +386,16 @@ function! s:buffer_related() dict abort
           \'spec/lib/'.bare.'_spec.rb',
           \'test/unit/'.bare.'_test.rb',
           \'spec/unit/'.bare.'_spec.rb')
+          \'test/integration/'.bare.'_test.rb',
+          \'spec/integration/'.bare.'_spec.rb',
+          \'test/acceptance/'.bare.'_test.rb',
+          \'spec/acceptance/'.bare.'_spec.rb')
+  elseif self.name() =~# '^\(test\|spec\)/unit/.*_\1\.rb$'
+    return 'lib/'.self.name()[10:-9].'.rb'
+  elseif self.name() =~# '^\(test\|spec\)/acceptance/.*_\1\.rb$'
+    return 'lib/'.self.name()[16:-9].'.rb'
+  elseif self.name() =~# '^\(test\|spec\)/integration/.*_\1\.rb$'
+    return 'lib/'.self.name()[17:-9].'.rb'
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
     return s:project().first_file(
       \'lib/'.self.name()[5:-9].'.rb',
