@@ -318,7 +318,7 @@ function! s:Rake(bang,arg)
     let &l:makeprg = s:project().makeprg()
     let &l:errorformat = g:rake#errorformat
     let b:current_compiler = 'rake'
-    if exists(':Make')
+    if exists(':Make') == 2
       execute 'Make'.a:bang.' '.a:arg
     else
       execute 'make! '.a:arg
@@ -612,6 +612,10 @@ augroup END
 
 " }}}1
 " Path {{{1
+
+if !exists('g:did_load_ftplugin')
+  filetype plugin on
+endif
 
 augroup rake_path
   autocmd!
