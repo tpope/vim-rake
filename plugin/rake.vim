@@ -158,12 +158,35 @@ augroup END
 " }}}1
 " Projectile {{{
 
-let s:projections = {}
+let s:projections = {
+      \ 'lib/*.rb': {'command': 'lib', 'alternate': [
+      \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
+      \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
+      \ 'test/test_helper.rb': {'command': 'test'},
+      \ 'test/*_test.rb': {'command': 'test', 'alternate': 'lib/{}.rb'},
+      \ 'test/lib/*_test.rb': {'alternate': 'lib/{}.rb'},
+      \ 'test/unit/*_test.rb': {'alternate': 'lib/{}.rb'},
+      \ 'spec/spec_helper.rb': {'command': 'spec'},
+      \ 'spec/*_spec.rb': {'command': 'spec', 'alternate': 'lib/{}.rb'},
+      \ 'spec/lib/*_spec.rb': {'alternate': 'lib/{}.rb'},
+      \ 'spec/unit/*_spec.rb': {'alternate': 'lib/{}.rb'},
+      \ 'rakelib/*.rake': {'command': 'task'},
+      \ 'Rakefile': {'command': 'task'}}
 
 function! s:ProjectileSetup()
   call s:Detect(g:projectile_file)
   if exists('b:rake_root')
-    call projectile#append(b:rake_root, s:projections)
+    let projections = copy(s:projections)
+    if isdirectory(b:rake_root.'/test')
+      let test = 1
+    endif
+    if isdirectory(b:rake_root.'/spec')
+      let spec = 1
+    endif
+    let projections['lib/*.rb'].alternate =
+          \ filter(copy(projections['lib/*.rb'].alternate),'exists(v:val[0:3])')
+    call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
+    call projectile#append(b:rake_root, projections)
   endif
 endfunction
 
@@ -494,13 +517,15 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RV :execute
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RT :execute s:R('T','<bang>',<f-args>)")
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RD :execute s:R('D','<bang>',<f-args>)")
 
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete A  :execute s:R('E','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AE :execute s:R('E','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute s:R('S','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AV :execute s:R('V','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AT :execute s:R('T','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AD :execute s:R('D','<bang>',<f-args>)")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AR :execute s:R('D','<bang>',<f-args>)")
+if !exists('g:loaded_projectile')
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete A  :execute s:R('E','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AE :execute s:R('E','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute s:R('S','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AV :execute s:R('V','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AT :execute s:R('T','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AD :execute s:R('D','<bang>',<f-args>)")
+  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AR :execute s:R('D','<bang>',<f-args>)")
+endif
 
 " }}}1
 " Elib, etc. {{{1
