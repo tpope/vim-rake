@@ -128,13 +128,17 @@ function! s:find_root(path) abort
   return ''
 endfunction
 
-function! s:Detect(path)
+function! s:Detect(path) abort
   if !exists('b:rake_root')
     let dir = s:find_root(a:path)
     if dir !=# ''
       let b:rake_root = dir
     endif
   endif
+endfunction
+
+function! s:Setup(path) abort
+  call s:Detect(a:path)
   if exists('b:rake_root')
     silent doautocmd User Rake
   endif
@@ -144,11 +148,27 @@ augroup rake
   autocmd!
   autocmd BufNewFile,BufReadPost *
         \ if empty(&filetype) |
-        \   call s:Detect(expand('<amatch>:p')) |
+        \   call s:Setup(expand('<amatch>:p')) |
         \ endif
-  autocmd FileType * call s:Detect(expand('%:p'))
-  autocmd User NERDTreeInit,NERDTreeNewRoot call s:Detect(b:NERDTreeRoot.path.str())
-  autocmd VimEnter * if expand('<amatch>')==''|call s:Detect(getcwd())|endif
+  autocmd FileType * call s:Setup(expand('%:p'))
+  autocmd User NERDTreeInit,NERDTreeNewRoot call s:Setup(b:NERDTreeRoot.path.str())
+  autocmd VimEnter * if expand('<amatch>')==''|call s:Setup(getcwd())|endif
+augroup END
+
+" }}}1
+" Projectile {{{
+
+let s:projections = {}
+
+function! s:ProjectileSetup()
+  call s:Detect(g:projectile_file)
+  if exists('b:rake_root')
+    call projectile#append(b:rake_root, s:projections)
+  endif
+endfunction
+
+augroup rake_projectile
+  autocmd User ProjectileDetect call s:ProjectileSetup()
 augroup END
 
 " }}}1
