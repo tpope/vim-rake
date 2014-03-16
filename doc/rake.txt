@@ -16,9 +16,6 @@ path, making this plugin ideal for "gem open" or "bundle open".
 
 COMMANDS                                        *rake-commands*
 
-All commands except |:Rake| support an alternate form that starts with R, for
-backwards compatibility.
-
                                                 *rake-:Rake*
 :Rake [task]            Invoke |:make| followed by |:cwindow| with rake as the
                         'makeprg'.  Uses `bin/rake` if available.
@@ -72,6 +69,10 @@ backwards compatibility.
                         place the resulting tags file in the root of the
                         project, but if the directory is read only (e.g., a
                         system gem), it will be placed in a temp file instead.
+
+                                                *g:rake_legacy*
+Set g:rake_legacy to 1 to enable the old, legacy R command variants.  This
+option will eventually be removed.
 
 ABOUT                                           *rake-about*
 
