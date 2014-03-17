@@ -1,11 +1,12 @@
 # rake.vim
 
-With rake.vim, you can use all those parts of [rails.vim][] that you wish you
-could use on your other Ruby projects on anything with a `Rakefile`, including
-`:A`, `:Elib` and friends, and of course `:Rake`.  It's great when paired with
-[`gem open`][gem-browse] and `bundle open` and complemented nicely by
-[bundler.vim][].
+Rake.vim is a plugin leveraging [projectile.vim][] to enable you to use all
+those parts of [rails.vim][] that you wish you could use on your other Ruby
+projects, including `:A`, `:Elib` and friends, and of course `:Rake`.  It's
+great when paired with [`gem open`][gem-browse] and `bundle open` and
+complemented nicely by [bundler.vim][].
 
+[projectile.vim]: https://github.com/tpope/vim-projectile
 [bundler.vim]: https://github.com/tpope/vim-bundler
 [rails.vim]: https://github.com/tpope/vim-rails
 [gem-browse]: https://github.com/tpope/gem-browse
@@ -17,6 +18,7 @@ installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
 then simply copy and paste:
 
     cd ~/.vim/bundle
+    git clone git://github.com/tpope/vim-projectile.git
     git clone git://github.com/tpope/vim-rake.git
 
 Once help tags have been generated, you can view the manual with
