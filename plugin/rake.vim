@@ -453,18 +453,21 @@ call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Lcd  :lcd
 " A {{{1
 
 function! s:buffer_related() dict abort
-  if self.name() =~# '^lib/'
+  if self.name() =~# '^lib/' || self.name() =~# '^app/'
     let bare = s:sub(self.name()[4:-1],'\.rb$','')
     return s:project().first_file(
           \'test/'.bare.'_test.rb',
           \'spec/'.bare.'_spec.rb',
           \'test/lib/'.bare.'_test.rb',
           \'spec/lib/'.bare.'_spec.rb',
+          \'test/app/'.bare.'_test.rb',
+          \'spec/app/'.bare.'_spec.rb',
           \'test/unit/'.bare.'_test.rb',
           \'spec/unit/'.bare.'_spec.rb')
   elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
     return s:project().first_file(
       \'lib/'.self.name()[5:-9].'.rb',
+      \'app/'.self.name()[5:-9].'.rb',
       \self.name()[5:-9].'.rb')
   elseif self.name() ==# 'Gemfile'
     return 'Gemfile.lock'
