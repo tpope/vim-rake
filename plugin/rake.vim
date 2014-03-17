@@ -188,6 +188,8 @@ function! s:ProjectileDetect() abort
     let projections['lib/*.rb'].alternate =
           \ filter(copy(projections['lib/*.rb'].alternate),'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
+    let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
+    let projections[gemspec] = {'command': 'lib'}
     call projectile#append(b:rake_root, projections)
   endif
 endfunction
