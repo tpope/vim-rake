@@ -161,15 +161,22 @@ augroup END
 " Projectile {{{
 
 let s:projections = {
+      \ '*': {'compiler': 'rake'},
       \ 'lib/*.rb': {'command': 'lib', 'alternate': [
       \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
       \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
       \ 'test/test_helper.rb': {'command': 'test'},
-      \ 'test/*_test.rb': {'command': 'test', 'alternate': 'lib/{}.rb'},
+      \ 'test/*_test.rb': {
+      \   'command': 'test',
+      \   'dispatch': 'testrb %',
+      \   'alternate': 'lib/{}.rb'},
       \ 'test/lib/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'test/unit/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'spec/spec_helper.rb': {'command': 'spec'},
-      \ 'spec/*_spec.rb': {'command': 'spec', 'alternate': 'lib/{}.rb'},
+      \ 'spec/*_spec.rb': {
+      \   'command': 'spec',
+      \   'dispatch': 'rspec %',
+      \   'alternate': 'lib/{}.rb'},
       \ 'spec/lib/*_spec.rb': {'alternate': 'lib/{}.rb'},
       \ 'spec/unit/*_spec.rb': {'alternate': 'lib/{}.rb'},
       \ 'rakelib/*.rake': {'command': 'task'},
