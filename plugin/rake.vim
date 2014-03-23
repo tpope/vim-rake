@@ -161,7 +161,7 @@ augroup END
 " Projectile {{{
 
 let s:projections = {
-      \ '*': {'compiler': 'rake'},
+      \ '*': {'make': 'rake -f {project}/Rakefile'},
       \ 'lib/*.rb': {'command': 'lib', 'alternate': [
       \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
       \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
@@ -191,6 +191,10 @@ function! s:ProjectileDetect() abort
     endif
     if isdirectory(b:rake_root.'/spec')
       let spec = 1
+    endif
+    if !has('win32') && b:rake_root !~# '\s' && executable(b:rake_root.'/bin/rake')
+      let projections['*'] = copy(projections['*'])
+      let projections['*'].make = '{project}/bin/' . projections['*'].make
     endif
     let projections['lib/*.rb'].alternate =
           \ filter(copy(projections['lib/*.rb'].alternate),'exists(v:val[0:3])')
