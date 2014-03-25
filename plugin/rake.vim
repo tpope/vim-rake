@@ -168,14 +168,14 @@ let s:projections = {
       \ 'test/test_helper.rb': {'command': 'test'},
       \ 'test/*_test.rb': {
       \   'command': 'test',
-      \   'dispatch': 'testrb %',
+      \   'dispatch': 'testrb {file}',
       \   'alternate': 'lib/{}.rb'},
       \ 'test/lib/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'test/unit/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'spec/spec_helper.rb': {'command': 'spec'},
       \ 'spec/*_spec.rb': {
       \   'command': 'spec',
-      \   'dispatch': 'rspec %',
+      \   'dispatch': 'rspec {file}',
       \   'alternate': 'lib/{}.rb'},
       \ 'spec/lib/*_spec.rb': {'alternate': 'lib/{}.rb'},
       \ 'spec/unit/*_spec.rb': {'alternate': 'lib/{}.rb'},
