@@ -667,55 +667,6 @@ call s:navcommand('spec')
 call s:navcommand('task')
 
 " }}}1
-" Ctags {{{1
-
-function! s:project_tags_file() dict abort
-  if filereadable(self.path('tags')) || filewritable(self.path())
-    return self.path('tags')
-  else
-    if !has_key(self,'_tags_file')
-      let self._tags_file = tempname()
-    endif
-  endif
-  return self._tags_file
-endfunction
-
-call s:add_methods('project',['tags_file'])
-
-function! s:Tags(args)
-  if exists("g:Tlist_Ctags_Cmd")
-    let cmd = g:Tlist_Ctags_Cmd
-  elseif executable("exuberant-ctags")
-    let cmd = "exuberant-ctags"
-  elseif executable("ctags-exuberant")
-    let cmd = "ctags-exuberant"
-  elseif executable("ctags")
-    let cmd = "ctags"
-  elseif executable("ctags.exe")
-    let cmd = "ctags.exe"
-  else
-    call s:throw("ctags not found")
-  endif
-  return escape('!'.cmd.' -f '.s:shellesc(s:project().tags_file()).' -R '.s:shellesc(s:project().path()),'%#').' '.a:args
-endfunction
-
-if exists('g:rake_legacy')
-  call s:command("-bar -bang -nargs=? Rtags :Ctags<bang> <args>")
-else
-  call s:command("-bar -bang -nargs=? Rtags echoerr ':Rtags is deprecated. Use :Ctags or let g:rake_legacy = 1 in vimrc'")
-endif
-call s:command("-bar -bang -nargs=? Ctags :execute s:Tags(<q-args>)")
-call s:command("-bar -bang -nargs=? Tags  :execute s:Tags(<q-args>)")
-
-augroup rake_tags
-  autocmd!
-  autocmd User Rake
-        \ if stridx(&tags, escape(s:project().tags_file(),', ')) < 0 |
-        \   let &l:tags = escape(s:project().tags_file(),', ') . ',' . &tags |
-        \ endif
-augroup END
-
-" }}}1
 " Path {{{1
 
 if !exists('g:did_load_ftplugin')

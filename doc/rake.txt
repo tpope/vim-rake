@@ -65,10 +65,7 @@ COMMANDS                                        *rake-commands*
                         argument is given.  Has the same variants as |:Elib|.
 
                                                 *rake-:Ctags* *rake-:Rtags*
-:Ctags                  Invoke ctags for the project.  Ordinarily it will
-                        place the resulting tags file in the root of the
-                        project, but if the directory is read only (e.g., a
-                        system gem), it will be placed in a temp file instead.
+:Ctags                  Removed without replacement.
 
                                                 *g:rake_legacy*
 Set g:rake_legacy to 1 to enable the old, legacy R command variants.  This
