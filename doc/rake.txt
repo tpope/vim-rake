@@ -45,8 +45,8 @@ COMMANDS                                        *rake-commands*
 
                                                 *rake-:Elib* *rake-:Rlib*
 :Elib [file]            Edit a Ruby file under lib/, or Gemfile if no argument
-                        is given.  Variants exist for :ESlib, :EVlib, :ETlib,
-                        and :EDlib.
+                        is given.  Variants exist for :Slib (|:split|), :Vlib
+                        (|:vsplit|), :Tlib (|:tabedit|), and :Dlib (|:read|).
 
                                                 *rake-:Etest* *rake-:Rtest*
 :Etest [file]           Edit a test file under test/ or a spec file under
