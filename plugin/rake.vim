@@ -8,6 +8,12 @@ if exists('g:loaded_rake') || &cp || v:version < 700
 endif
 let g:loaded_rake = 1
 
+if !exists('g:dispatch_compilers')
+  let g:dispatch_compilers = {}
+endif
+let g:dispatch_compilers['bundle exec'] = ''
+let g:dispatch_compilers['ruby bin/rake'] = 'rake'
+
 " Utility {{{1
 
 function! s:function(name) abort
@@ -198,7 +204,7 @@ function! s:ProjectileDetect() abort
     if isdirectory(b:rake_root.'/spec')
       let spec = 1
     endif
-    let projections['*'].make = s:binstub(b:rake_root, 'rake', '-f', '{project}/Rakefile')
+    let projections['*'].make = split(s:project().makeprg())
     let projections['test/*_test.rb'].dispatch = s:binstub(b:rake_root, 'testrb', '{file}')
     let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec', '{file}')
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
