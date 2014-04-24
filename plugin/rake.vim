@@ -194,8 +194,8 @@ function! s:binstub(root, cmd, ...) abort
   endif
 endfunction
 
-function! s:ProjectileDetect(fn, file) abort
-  call s:Detect(a:file)
+function! s:ProjectileDetect() abort
+  call s:Detect(g:projectile_file)
   if exists('b:rake_root')
     let projections = deepcopy(s:projections)
     if isdirectory(b:rake_root.'/test')
@@ -211,17 +211,16 @@ function! s:ProjectileDetect(fn, file) abort
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'command': 'lib'}
-    call call(a:fn, [b:rake_root, projections])
-    call call(a:fn, [b:rake_root, {
+    call projectile#append(b:rake_root, projections)
+    call projectile#append(b:rake_root, {
           \ 'test/*_test.rb': {'command': 'spec'},
-          \ 'spec/*_spec.rb': {'command': 'test'}}])
+          \ 'spec/*_spec.rb': {'command': 'test'}})
   endif
 endfunction
 
 augroup rake_projectile
   autocmd!
-  autocmd User ProjectileDetect call s:ProjectileDetect('projectile#append', g:projectile_file)
-  autocmd User ProjectionistDetect call s:ProjectileDetect('projectionist#append', g:projectionist_file)
+  autocmd User ProjectileDetect call s:ProjectileDetect()
 augroup END
 
 " }}}1
