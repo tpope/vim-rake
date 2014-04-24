@@ -212,28 +212,15 @@ function! s:ProjectileDetect() abort
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'command': 'lib'}
     call projectile#append(b:rake_root, projections)
-  endif
-endfunction
-
-function! s:ProjectileActivate() abort
-  if exists('b:rake_root') && exists('*projectile#define_navigation_command')
-    if isdirectory(b:rake_root.'/test')
-      call projectile#define_navigation_command('spec',
-            \ get(projectile#navigation_commands(), 'spec', []) +
-            \ [[b:rake_root, 'test/*_test.rb'], [b:rake_root, 'test/test_helper.rb']])
-    endif
-    if isdirectory(b:rake_root.'/spec')
-      call projectile#define_navigation_command('test',
-            \ get(projectile#navigation_commands(), 'test', []) +
-            \ [[b:rake_root, 'spec/*_spec.rb'], [b:rake_root, 'spec/spec_helper.rb']])
-    endif
+    call projectile#append(b:rake_root, {
+          \ 'test/*_test.rb': {'command': 'spec'},
+          \ 'spec/*_spec.rb': {'command': 'test'}})
   endif
 endfunction
 
 augroup rake_projectile
   autocmd!
   autocmd User ProjectileDetect call s:ProjectileDetect()
-  autocmd User ProjectileActivate call s:ProjectileActivate()
 augroup END
 
 " }}}1
