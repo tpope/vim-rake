@@ -13,6 +13,7 @@ if !exists('g:dispatch_compilers')
 endif
 let g:dispatch_compilers['bundle exec'] = ''
 let g:dispatch_compilers['ruby bin/rake'] = 'rake'
+let g:dispatch_compilers['ruby -Itest'] = 'rubyunit'
 
 " Utility {{{1
 
@@ -186,11 +187,13 @@ let s:projections = {
       \ 'rakelib/*.rake': {'command': 'task'},
       \ 'Rakefile': {'command': 'task'}}
 
-function! s:binstub(root, cmd, ...) abort
+function! s:binstub(root, cmd) abort
   if !has('win32') && a:root !~# '\s' && executable(a:root.'/bin/'.a:cmd)
-    return ['{project}/bin/'.a:cmd] + a:000
+    return ['bin/'.a:cmd]
+  elseif filereadable(a:root.'/Gemfile')
+    return ['bundle', 'exec', a:cmd]
   else
-    return [a:cmd] + a:000
+    return [a:cmd]
   endif
 endfunction
 
@@ -205,8 +208,8 @@ function! s:ProjectileDetect() abort
       let spec = 1
     endif
     let projections['*'].make = split(s:project().makeprg())
-    let projections['test/*_test.rb'].dispatch = s:binstub(b:rake_root, 'testrb', '{file}')
-    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec', '{file}')
+    let projections['test/*.rb'] = {'dispatch': s:binstub(b:rake_root, 'ruby') + ['-Itest', '{file}']}
+    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}']
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
