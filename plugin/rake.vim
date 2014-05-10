@@ -209,6 +209,7 @@ function! s:ProjectionistDetect() abort
     endif
     let projections['*'].make = split(s:project().makeprg())
     let projections['Rakefile'].dispatch = projections['*'].make
+    let projections['rakelib/*.rake'].dispatch = projections['*'].make + ['{}']
     let projections['test/*.rb'] = {'dispatch': s:binstub(b:rake_root, 'ruby') + ['-Itest', '{file}']}
     let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}']
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
