@@ -97,7 +97,7 @@ endfunction
 
 function! s:define_commands()
   for [command, concede] in s:commands
-    if !concede || !exists('g:loaded_projectile')
+    if !concede || !exists('g:loaded_projectionist')
       exe 'command! -buffer '.command
     endif
   endfor
@@ -165,7 +165,7 @@ augroup rake
 augroup END
 
 " }}}1
-" Projectile {{{
+" Projectionist {{{
 
 let s:projections = {
       \ '*': {},
@@ -197,8 +197,8 @@ function! s:binstub(root, cmd) abort
   endif
 endfunction
 
-function! s:ProjectileDetect() abort
-  call s:Detect(g:projectile_file)
+function! s:ProjectionistDetect() abort
+  call s:Detect(get(g:, 'projectionist_file', ''))
   if exists('b:rake_root')
     let projections = deepcopy(s:projections)
     if isdirectory(b:rake_root.'/test')
@@ -214,16 +214,16 @@ function! s:ProjectileDetect() abort
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'command': 'lib'}
-    call projectile#append(b:rake_root, projections)
-    call projectile#append(b:rake_root, {
+    call projectionist#append(b:rake_root, projections)
+    call projectionist#append(b:rake_root, {
           \ 'test/*_test.rb': {'command': 'spec'},
           \ 'spec/*_spec.rb': {'command': 'test'}})
   endif
 endfunction
 
-augroup rake_projectile
+augroup rake_projectionist
   autocmd!
-  autocmd User ProjectileDetect call s:ProjectileDetect()
+  autocmd User ProjectionistDetect call s:ProjectionistDetect()
 augroup END
 
 " }}}1
@@ -562,7 +562,7 @@ else
   call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RD echoerr ':RD is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
 endif
 
-if !exists('g:loaded_projectile')
+if !exists('g:loaded_projectionist')
   call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete A  :execute s:R('E','<bang>',<f-args>)", 1)
   call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AE :execute s:R('E','<bang>',<f-args>)", 1)
   call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute s:R('S','<bang>',<f-args>)", 1)
@@ -577,7 +577,7 @@ endif
 
 function! s:navcommand(name) abort
   for type in ['E', 'S', 'V', 'T', 'D']
-    if !exists('g:loaded_projectile')
+    if !exists('g:loaded_projectionist')
       call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete ".type.a:name." :execute s:Edit('".type."','<bang>',s:R".a:name."(matchstr(<q-args>,'[^:#]*')).matchstr(<q-args>,'[:#].*'))", 1)
     endif
     if exists('g:rake_legacy')
