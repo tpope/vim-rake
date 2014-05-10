@@ -208,12 +208,16 @@ function! s:ProjectionistDetect() abort
       let spec = 1
     endif
     let projections['*'].make = split(s:project().makeprg())
+    let projections['Rakefile'].dispatch = projections['*'].make
     let projections['test/*.rb'] = {'dispatch': s:binstub(b:rake_root, 'ruby') + ['-Itest', '{file}']}
     let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}']
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'command': 'lib'}
+    if gemspec !=# 'Gemfile'
+      let projections[gemspec].dispatch = ['gem', 'build', '{file}']
+    endif
     call projectionist#append(b:rake_root, projections)
     call projectionist#append(b:rake_root, {
           \ 'test/*_test.rb': {'command': 'spec'},
