@@ -422,6 +422,15 @@ function! s:RakeComplete(A, L, P) abort
   return s:completion_filter(s:project().tasks(), a:A)
 endfunction
 
+function! CompilerComplete_rake(A, L, P)
+  let path = fnamemodify(findfile('Rakefile', escape(getcwd(), ' ,;').';'), ':h')
+  if !empty(path)
+    return s:completion_filter(s:project(path).tasks(), a:A)
+  else
+    return []
+  endif
+endfunction
+
 function! s:project_tasks() dict abort
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let cwd = getcwd()
