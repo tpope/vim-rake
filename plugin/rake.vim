@@ -375,12 +375,12 @@ let g:rake#errorformat = '%D(in\ %f),'
       \.'%\\s%#%f:%l:,'
       \.'%m\ [%f:%l]:'
 
-function! s:project_makeprg()
-  if executable(s:project().path('bin/rake'))
+function! s:project_makeprg() dict abort
+  if executable(self.path('bin/rake'))
     return 'bin/rake'
-  elseif filereadable(s:project().path('bin/rake'))
+  elseif filereadable(self.path('bin/rake'))
     return 'ruby bin/rake'
-  elseif filereadable(s:project().path('Gemfile'))
+  elseif filereadable(self.path('Gemfile'))
     return 'bundle exec rake'
   else
     return 'rake'
@@ -418,16 +418,18 @@ function! s:Rake(bang,arg)
   endtry
 endfunction
 
-function! s:RakeComplete(A,L,P)
-  return s:completion_filter(s:project().tasks(),a:A)
+function! s:RakeComplete(A, L, P) abort
+  return s:completion_filter(s:project().tasks(), a:A)
 endfunction
 
-function! s:project_tasks()
-  call s:push_chdir()
+function! s:project_tasks() dict abort
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+  let cwd = getcwd()
   try
-    let lines = split(system('rake -T'),"\n")
+    execute cd fnameescape(self.path())
+    let lines = split(system(self.makeprg() . ' -T'), "\n")
   finally
-    call s:pop_command()
+    execute cd fnameescape(cwd)
   endtry
   if v:shell_error != 0
     return []
@@ -437,7 +439,7 @@ function! s:project_tasks()
   return lines
 endfunction
 
-call s:add_methods('project',['tasks'])
+call s:add_methods('project', ['tasks'])
 
 call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<q-args>)")
 
