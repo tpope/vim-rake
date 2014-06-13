@@ -418,14 +418,19 @@ function! s:Rake(bang,arg)
   endtry
 endfunction
 
-function! s:RakeComplete(A, L, P) abort
-  return s:completion_filter(s:project().tasks(), a:A)
+function! s:RakeComplete(A, L, P, ...) abort
+  let project = a:0 ? a:1 : s:project()
+  if exists('*projectionist#completion_filter')
+    return projectionist#completion_filter(project.tasks(), a:A, ':')
+  else
+    return s:completion_filter(project.tasks(), a:A)
+  endif
 endfunction
 
 function! CompilerComplete_rake(A, L, P)
   let path = fnamemodify(findfile('Rakefile', escape(getcwd(), ' ,;').';'), ':h')
   if !empty(path)
-    return s:completion_filter(s:project(path).tasks(), a:A)
+    return s:RakeComplete(a:A, a:L, a:P, s:project(path))
   else
     return []
   endif
