@@ -428,11 +428,15 @@ function! s:RakeComplete(A, L, P, ...) abort
 endfunction
 
 function! CompilerComplete_rake(A, L, P)
-  let path = fnamemodify(findfile('Rakefile', escape(getcwd(), ' ,;').';'), ':h')
-  if !empty(path)
-    return s:RakeComplete(a:A, a:L, a:P, s:project(path))
-  else
+  let path = findfile('Rakefile', escape(getcwd(), ' ,;').';')
+  if empty(path)
     return []
+  endif
+  let path = fnamemodify(path, ':p:h')
+  if path ==# get(b:, 'rails_root', 'x') && exists('*rails#complete_rake')
+    return rails#complete_rake(a:A, a:L, a:P)
+  else
+    return s:RakeComplete(a:A, a:L, a:P, s:project(path))
   endif
 endfunction
 
