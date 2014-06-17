@@ -352,19 +352,6 @@ call s:add_methods('buffer',['getvar','setvar','getline','project','name','path'
 " }}}1
 " Rake {{{1
 
-function! s:push_chdir(...)
-  if !exists("s:command_stack") | let s:command_stack = [] | endif
-  let chdir = exists("*haslocaldir") && haslocaldir() ? "lchdir " : "chdir "
-  call add(s:command_stack,chdir.s:fnameescape(getcwd()))
-  exe chdir.'`=s:project().path()`'
-endfunction
-
-function! s:pop_command()
-  if exists("s:command_stack") && len(s:command_stack) > 0
-    exe remove(s:command_stack,-1)
-  endif
-endfunction
-
 function! s:project_makeprg() dict abort
   if executable(self.path('bin/rake'))
     return 'bin/rake'
@@ -383,8 +370,10 @@ function! s:Rake(bang, arg) abort
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
   let old_compiler = get(b:, 'current_compiler', '')
-  call s:push_chdir()
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+  let cwd = getcwd()
   try
+    execute cd fnameescape(s:project().path())
     if !empty(findfile('compiler/rake.vim', escape(&rtp, ' ')))
       compiler rake
     else
@@ -408,7 +397,7 @@ function! s:Rake(bang, arg) abort
     if empty(old_compiler)
       unlet! b:current_compiler
     endif
-    call s:pop_command()
+    execute cd fnameescape(cwd)
   endtry
 endfunction
 
