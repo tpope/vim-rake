@@ -365,16 +365,6 @@ function! s:pop_command()
   endif
 endfunction
 
-let g:rake#errorformat = '%D(in\ %f),'
-      \.'%\\s%#from\ %f:%l:%m,'
-      \.'%\\s%#from\ %f:%l:,'
-      \.'%\\s%##\ %f:%l:%m,'
-      \.'%\\s%##\ %f:%l,'
-      \.'%\\s%#[%f:%l:\ %#%m,'
-      \.'%\\s%#%f:%l:\ %#%m,'
-      \.'%\\s%#%f:%l:,'
-      \.'%m\ [%f:%l]:'
-
 function! s:project_makeprg() dict abort
   if executable(self.path('bin/rake'))
     return 'bin/rake'
@@ -389,15 +379,19 @@ endfunction
 
 call s:add_methods('project', ['makeprg'])
 
-function! s:Rake(bang,arg)
+function! s:Rake(bang, arg) abort
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
   let old_compiler = get(b:, 'current_compiler', '')
   call s:push_chdir()
   try
+    if !empty(findfile('compiler/rake.vim', escape(&rtp, ' ')))
+      compiler rake
+    else
+      let &l:errorformat = '%+I%.%#'
+      let b:current_compiler = 'rake'
+    endif
     let &l:makeprg = s:project().makeprg()
-    let &l:errorformat = g:rake#errorformat
-    let b:current_compiler = 'rake'
     if exists(':Make') == 2
       execute 'Make'.a:bang.' '.a:arg
     else
