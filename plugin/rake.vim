@@ -13,7 +13,7 @@ if !exists('g:dispatch_compilers')
 endif
 let g:dispatch_compilers['bundle exec'] = ''
 let g:dispatch_compilers['ruby bin/rake'] = 'rake'
-let g:dispatch_compilers['ruby -Itest'] = 'rubyunit'
+let g:dispatch_compilers['ruby -I lib:test'] = 'rubyunit'
 
 " Utility {{{1
 
