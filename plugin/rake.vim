@@ -29,14 +29,6 @@ function! s:gsub(str,pat,rep) abort
   return substitute(a:str,'\v\C'.a:pat,a:rep,'g')
 endfunction
 
-function! s:shellesc(arg) abort
-  if a:arg =~ '^[A-Za-z0-9_/.-]\+$'
-    return a:arg
-  else
-    return shellescape(a:arg)
-  endif
-endfunction
-
 function! s:fnameescape(file) abort
   if exists('*fnameescape')
     return fnameescape(a:file)
