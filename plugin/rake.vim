@@ -217,9 +217,13 @@ function! s:ProjectionistDetect() abort
       let projections[gemspec].dispatch = ['gem', 'build', '{file}']
     endif
     call projectionist#append(b:rake_root, projections)
-    call projectionist#append(b:rake_root, {
-          \ 'test/*_test.rb': {'type': 'spec'},
-          \ 'spec/*_spec.rb': {'type': 'test'}})
+    let secondary = {
+          \ 'test/*_test.rb': exists('test') ? {'type': 'spec'} : {},
+          \ 'spec/*_spec.rb': exists('spec') ? {'type': 'test'} : {}}
+    call filter(secondary, '!empty(v:val)')
+    if !empty(secondary)
+      call projectionist#append(b:rake_root, secondary)
+    endif
   endif
 endfunction
 
