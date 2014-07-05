@@ -161,23 +161,23 @@ augroup END
 
 let s:projections = {
       \ '*': {},
-      \ 'lib/*.rb': {'command': 'lib', 'alternate': [
+      \ 'lib/*.rb': {'type': 'lib', 'alternate': [
       \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
       \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
-      \ 'test/test_helper.rb': {'command': 'test'},
+      \ 'test/test_helper.rb': {'type': 'test'},
       \ 'test/*_test.rb': {
-      \   'command': 'test',
+      \   'type': 'test',
       \   'alternate': 'lib/{}.rb'},
       \ 'test/lib/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'test/unit/*_test.rb': {'alternate': 'lib/{}.rb'},
-      \ 'spec/spec_helper.rb': {'command': 'spec'},
+      \ 'spec/spec_helper.rb': {'type': 'spec'},
       \ 'spec/*_spec.rb': {
-      \   'command': 'spec',
+      \   'type': 'spec',
       \   'alternate': 'lib/{}.rb'},
       \ 'spec/lib/*_spec.rb': {'alternate': 'lib/{}.rb'},
       \ 'spec/unit/*_spec.rb': {'alternate': 'lib/{}.rb'},
-      \ 'rakelib/*.rake': {'command': 'task'},
-      \ 'Rakefile': {'command': 'task'}}
+      \ 'rakelib/*.rake': {'type': 'task'},
+      \ 'Rakefile': {'type': 'task'}}
 
 function! s:binstub(root, cmd) abort
   if !has('win32') && a:root !~# '\s' && executable(a:root.'/bin/'.a:cmd)
@@ -212,14 +212,14 @@ function! s:ProjectionistDetect() abort
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
-    let projections[gemspec] = {'command': 'lib'}
+    let projections[gemspec] = {'type': 'lib'}
     if gemspec !=# 'Gemfile'
       let projections[gemspec].dispatch = ['gem', 'build', '{file}']
     endif
     call projectionist#append(b:rake_root, projections)
     call projectionist#append(b:rake_root, {
-          \ 'test/*_test.rb': {'command': 'spec'},
-          \ 'spec/*_spec.rb': {'command': 'test'}})
+          \ 'test/*_test.rb': {'type': 'spec'},
+          \ 'spec/*_spec.rb': {'type': 'test'}})
   endif
 endfunction
 
