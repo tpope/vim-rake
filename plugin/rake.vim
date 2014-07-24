@@ -21,47 +21,12 @@ function! s:function(name) abort
   return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '<SNR>\d\+_'),''))
 endfunction
 
-function! s:sub(str,pat,rep) abort
-  return substitute(a:str,'\v\C'.a:pat,a:rep,'')
-endfunction
-
-function! s:gsub(str,pat,rep) abort
-  return substitute(a:str,'\v\C'.a:pat,a:rep,'g')
-endfunction
-
-function! s:fnameescape(file) abort
-  if exists('*fnameescape')
-    return fnameescape(a:file)
-  else
-    return escape(a:file," \t\n*?[{`$\\%#'\"|!<")
-  endif
-endfunction
-
-function! s:shellslash(path)
+function! s:shellslash(path) abort
   if exists('+shellslash') && !&shellslash
-    return s:gsub(a:path,'\\','/')
+    return substitute(a:path, '\\', '/', 'g')
   else
     return a:path
   endif
-endfunction
-
-function! s:fuzzyglob(arg)
-  return s:gsub(s:gsub(a:arg,'[^/.]','[&]*'),'%(/|^)\.@!|\.','&*')
-endfunction
-
-function! s:completion_filter(results,A)
-  let results = sort(copy(a:results))
-  call filter(results,'v:val !~# "\\~$"')
-  let filtered = filter(copy(results),'v:val[0:strlen(a:A)-1] ==# a:A')
-  if !empty(filtered) | return filtered | endif
-  let regex = s:gsub(a:A,'[^/:]','[&].*')
-  let filtered = filter(copy(results),'v:val =~# "^".regex')
-  if !empty(filtered) | return filtered | endif
-  let filtered = filter(copy(results),'"/".v:val =~# "[/:]".regex')
-  if !empty(filtered) | return filtered | endif
-  let regex = s:gsub(a:A,'.','[&].*')
-  let filtered = filter(copy(results),'"/".v:val =~# regex')
-  return filtered
 endfunction
 
 function! s:throw(string) abort
@@ -69,36 +34,11 @@ function! s:throw(string) abort
   throw v:errmsg
 endfunction
 
-function! s:warn(str)
-  echohl WarningMsg
-  echomsg a:str
-  echohl None
-  let v:warningmsg = a:str
-endfunction
-
 function! s:add_methods(namespace, method_names) abort
   for name in a:method_names
     let s:{a:namespace}_prototype[name] = s:function('s:'.a:namespace.'_'.name)
   endfor
 endfunction
-
-let s:commands = []
-function! s:command(definition, ...) abort
-  let s:commands += [[a:definition, a:0]]
-endfunction
-
-function! s:define_commands()
-  for [command, concede] in s:commands
-    if !concede || !exists('g:loaded_projectionist')
-      exe 'command! -buffer '.command
-    endif
-  endfor
-endfunction
-
-augroup rake_utility
-  autocmd!
-  autocmd User Rake call s:define_commands()
-augroup END
 
 let s:abstract_prototype = {}
 
@@ -266,90 +206,6 @@ endfunction
 
 call s:add_methods('project',['path'])
 
-function! s:project_dirglob(base) dict abort
-  let base = s:sub(a:base,'^/','')
-  let matches = split(glob(self.path(s:gsub(base,'/','*&').'*/')),"\n")
-  call map(matches,'v:val[ strlen(self.path())+(a:base !~ "^/") : -1 ]')
-  return matches
-endfunction
-
-function! s:project_has_file(file) dict
-  return filereadable(self.path(a:file))
-endfunction
-
-function! s:project_has_directory(file) dict
-  return isdirectory(self.path(a:file))
-endfunction
-
-function! s:project_first_file(...) dict abort
-  for file in a:000
-    if s:project().has_file(file)
-      return file
-    endif
-  endfor
-  for file in a:000
-    if s:project().has_directory(matchstr(file,'^[^/]*'))
-      return file
-    endif
-  endfor
-  return a:000[0]
-endfunction
-
-call s:add_methods('project',['dirglob','has_file','has_directory','first_file'])
-
-" }}}1
-" Buffer {{{1
-
-let s:buffer_prototype = {}
-
-function! s:buffer(...) abort
-  let buffer = {'#': bufnr(a:0 ? a:1 : '%')}
-  call extend(extend(buffer,s:buffer_prototype,'keep'),s:abstract_prototype,'keep')
-  if buffer.getvar('rake_root') !=# ''
-    return buffer
-  endif
-  call s:throw('not a rake project: '.expand('%:p'))
-endfunction
-
-function! rake#buffer(...) abort
-  return s:buffer(a:0 ? a:1 : '%')
-endfunction
-
-function! s:buffer_getvar(var) dict abort
-  return getbufvar(self['#'],a:var)
-endfunction
-
-function! s:buffer_setvar(var,value) dict abort
-  return setbufvar(self['#'],a:var,a:value)
-endfunction
-
-function! s:buffer_getline(lnum) dict abort
-  return getbufline(self['#'],a:lnum)[0]
-endfunction
-
-function! s:buffer_project() dict abort
-  return s:project(self.getvar('rake_root'))
-endfunction
-
-function! s:buffer_name() dict abort
-  return self.path()[strlen(self.project().path())+1 : -1]
-endfunction
-
-function! s:buffer_path() dict abort
-  let bufname = bufname(self['#'])
-  return s:shellslash(bufname == '' ? '' : fnamemodify(bufname,':p'))
-endfunction
-
-function! s:buffer_relative() dict abort
-  return self.name()
-endfunction
-
-function! s:buffer_absolute() dict abort
-  return self.path()
-endfunction
-
-call s:add_methods('buffer',['getvar','setvar','getline','project','name','path','relative','absolute'])
-
 " }}}1
 " Rake {{{1
 
@@ -404,11 +260,7 @@ endfunction
 
 function! s:RakeComplete(A, L, P, ...) abort
   let project = a:0 ? a:1 : s:project()
-  if exists('*projectionist#completion_filter')
-    return projectionist#completion_filter(project.tasks(), a:A, ':')
-  else
-    return s:completion_filter(project.tasks(), a:A)
-  endif
+  return projectionist#completion_filter(project.tasks(), a:A, ':')
 endfunction
 
 function! CompilerComplete_rake(A, L, P)
@@ -443,233 +295,15 @@ endfunction
 
 call s:add_methods('project', ['tasks'])
 
-call s:command("-bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake :execute s:Rake('<bang>',<q-args>)")
-
-" }}}1
-" Cd, Lcd {{{1
-
-function! s:DirComplete(A,L,P) abort
-  return s:project().dirglob(a:A)
+function! s:define_rake() abort
+  command! -buffer -bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake
+        \ execute s:Rake('<bang>',<q-args>)")
 endfunction
 
-if exists('g:rake_legacy')
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Rcd  :Cd<bang> <args>")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Rlcd :Lcd<bang> <args>")
-else
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Rcd  echoerr ':Rcd is deprecated. Use :Cd or let g:rake_legacy = 1 in vimrc'")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Rlcd echoerr ':Rlcd is deprecated. Use :Lcd or let g:rake_legacy = 1 in vimrc'")
-endif
-call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Cd   :cd<bang>  `=s:project().path(<q-args>)`", 1)
-call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Lcd  :lcd<bang> `=s:project().path(<q-args>)`", 1)
-
-" }}}1
-" A {{{1
-
-function! s:buffer_related() dict abort
-  if self.name() =~# '^lib/'
-    let bare = s:sub(self.name()[4:-1],'\.rb$','')
-    return s:project().first_file(
-          \'test/'.bare.'_test.rb',
-          \'spec/'.bare.'_spec.rb',
-          \'test/lib/'.bare.'_test.rb',
-          \'spec/lib/'.bare.'_spec.rb',
-          \'test/unit/'.bare.'_test.rb',
-          \'spec/unit/'.bare.'_spec.rb')
-  elseif self.name() =~# '^\(test\|spec\)/.*_\1\.rb$'
-    return s:project().first_file(
-      \'lib/'.self.name()[5:-9].'.rb',
-      \self.name()[5:-9].'.rb')
-  elseif self.name() ==# 'Gemfile'
-    return 'Gemfile.lock'
-  elseif self.name() ==# 'Gemfile.lock'
-    return 'Gemfile'
-  endif
-  return ''
-endfunction
-
-call s:add_methods('buffer',['related'])
-
-function! s:project_relglob(path,glob,...) dict
-  if exists("+shellslash") && ! &shellslash
-    let old_ss = &shellslash
-  endif
-  try
-    let &shellslash = 1
-    let path = a:path
-    if path !~ '^/' && path !~ '^\w:'
-      let path = self.path(path)
-    endif
-    let suffix = a:0 ? a:1 : ''
-    let full_paths = split(glob(path.a:glob.suffix),"\n")
-    let relative_paths = []
-    for entry in full_paths
-      if suffix == '' && isdirectory(entry) && entry !~ '/$'
-        let entry .= '/'
-      endif
-      let relative_paths += [entry[strlen(path) : -strlen(suffix)-1]]
-    endfor
-    return relative_paths
-  finally
-    if exists("old_ss")
-      let &shellslash = old_ss
-    endif
-  endtry
-endfunction
-
-call s:add_methods('project',['relglob'])
-
-function! s:R(cmd,bang,...) abort
-  let cmds = {'E': 'edit', 'S': 'split', 'V': 'vsplit', 'T': 'tabedit', 'D': 'read'}
-  let cmd = cmds[a:cmd] . a:bang
-  try
-    if a:0
-      let goal = s:project().path(a:1)
-    else
-      let related = s:buffer().related()
-      if related == ''
-        call s:throw('no related file')
-      else
-        let goal = s:project().path(related)
-      endif
-    endif
-    if goal =~# '[#:]\d\+$'
-      let cmd .= ' +'.matchstr(goal,'\d\+$')
-      let goal = matchstr(goal,'.*\ze[:#].*$')
-    elseif goal =~ '[#:]\w\+[?!=]\=$'
-      let cmd .= ' +/^\\s*def\\s\\+'.matchstr(goal,'[:#]\zs.\{-\}$')
-      let goal = matchstr(goal,'.*\ze[:#].*$')
-    endif
-    let parent = fnamemodify(goal,':h')
-    if !isdirectory(parent)
-      if a:bang ==# '!' && isdirectory(fnamemodify(parent,':h'))
-        call mkdir(parent)
-      endif
-      call s:throw('No such directory: '.parent)
-    endif
-    return cmd.' '.s:fnameescape(goal)
-    return ''
-  catch /^rake:/
-    return 'echoerr v:errmsg'
-  endtry
-endfunction
-
-function! s:RComplete(A,L,P) abort
-  return s:completion_filter(s:project().relglob('',s:fuzzyglob(a:A).'*'),a:A)
-endfunction
-
-if exists('g:rake_legacy')
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete R  :A<bang> <args>|call s:warn(':R is deprecated. Use :A')")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RS :AS<bang> <args>|call s:warn(':RS is deprecated. Use :AS')")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RV :AV<bang> <args>|call s:warn(':RV is deprecated. Use :AV')")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RT :AT<bang> <args>|call s:warn(':RT is deprecated. Use :AT')")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RD :AD<bang> <args>|call s:warn(':RT is deprecated. Use :AD')")
-else
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete R  echoerr ':R is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RS echoerr ':RS is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RV echoerr ':RV is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RT echoerr ':RT is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete RD echoerr ':RD is deprecated. Use :A or let g:rake_legacy = 1 in vimrc'")
-endif
-
-if !exists('g:loaded_projectionist')
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete A  :execute s:R('E','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AE :execute s:R('E','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AS :execute s:R('S','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AV :execute s:R('V','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AT :execute s:R('T','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AD :execute s:R('D','<bang>',<f-args>)", 1)
-  call s:command("-bar -bang -nargs=? -complete=customlist,s:RComplete AR :execute s:R('D','<bang>',<f-args>)", 1)
-endif
-
-" }}}1
-" Elib, etc. {{{1
-
-function! s:navcommand(name) abort
-  for type in ['E', 'S', 'V', 'T', 'D']
-    if !exists('g:loaded_projectionist')
-      call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete ".type.a:name." :execute s:Edit('".type."','<bang>',s:R".a:name."(matchstr(<q-args>,'[^:#]*')).matchstr(<q-args>,'[:#].*'))", 1)
-    endif
-    if exists('g:rake_legacy')
-      call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete R".type.a:name.' '.type.a:name.'<bang> <args>|call s:warn(":R'.type.a:name.' is deprecated. Use :'.type.a:name.'")')
-    else
-      call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete R".type.a:name." echoerr ':R".type.a:name." is deprecated. Use :".type.a:name." or let g:rake_legacy = 1 in vimrc'")
-    endif
-  endfor
-  if exists('g:rake_legacy')
-    call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete R".a:name.' E'.a:name.'<bang> <args>|call s:warn(":R'.a:name.' is deprecated. Use :E'.a:name.'")')
-  else
-    call s:command("-bar -bang -nargs=? -complete=customlist,s:R".a:name."Complete R".a:name." echoerr ':R".a:name." is deprecated. Use :E".a:name." or let g:rake_legacy = 1 in vimrc'")
-  endif
-endfunction
-
-function! s:Edit(cmd,bang,file)
-  return s:R(a:cmd == '' ? 'E' : a:cmd, a:bang, a:file)
-endfunction
-
-function! s:Rlib(file)
-  if a:file ==# ''
-    return get(s:project().relglob('','*.gemspec'),0,'Gemfile')
-  elseif a:file =~# '/$'
-    return 'lib/'.a:file
-  else
-    return 'lib/'.a:file.'.rb'
-  endif
-endfunction
-
-function! s:RlibComplete(A,L,P)
-  return s:completion_filter(s:project().relglob('lib/','**/*','.rb'),a:A)
-endfunction
-
-function! s:first_file(choices)
-  return call(s:project().first_file,a:choices,s:project())
-endfunction
-
-function! s:Rtestorspec(order,file)
-  if a:file ==# ''
-    return s:first_file(map(copy(a:order),'v:val."/".v:val."_helper.rb"'))
-  elseif a:file =~# '/$'
-    return s:first_file(map(copy(a:order),'v:val."/".a:file."/"'))
-  elseif a:file ==# '.'
-    return s:first_file(map(copy(a:order),'v:val."/"'))
-  else
-    return s:first_file(map(copy(a:order),'v:val."/".a:file."_".v:val.".rb"'))
-  endif
-endfunction
-
-function! s:Rtest(...)
-  return call('s:Rtestorspec',[['test', 'spec']] + a:000)
-endfunction
-
-function! s:RtestComplete(A,L,P)
-  return s:completion_filter(s:project().relglob('test/','**/*','_test.rb')+s:project().relglob('spec/','**/*','_spec.rb'),a:A)
-endfunction
-
-function! s:Rspec(...)
-  return call('s:Rtestorspec',[['spec', 'test']] + a:000)
-endfunction
-
-function! s:RspecComplete(A,L,P)
-  return s:completion_filter(s:project().relglob('spec/','**/*','_spec.rb')+s:project().relglob('test/','**/*','_test.rb'),a:A)
-endfunction
-
-function! s:Rtask(file)
-  if a:file ==# ''
-    return 'Rakefile'
-  elseif a:file =~# '/$'
-    return 'rakelib/'.a:file
-  else
-    return 'rakelib/'.a:file.'.rake'
-  endif
-endfunction
-
-function! s:RtaskComplete(A,L,P)
-  return s:completion_filter(s:project().relglob('rakelib/','**/*','.rake'),a:A)
-endfunction
-
-call s:navcommand('lib')
-call s:navcommand('test')
-call s:navcommand('spec')
-call s:navcommand('task')
+augroup rake_command
+  autocmd!
+  autocmd User Rake call s:define_rake()
+augroup END
 
 " }}}1
 " Path {{{1
