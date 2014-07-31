@@ -297,7 +297,7 @@ call s:add_methods('project', ['tasks'])
 
 function! s:define_rake() abort
   command! -buffer -bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake
-        \ execute s:Rake('<bang>',<q-args>)")
+        \ execute s:Rake('<bang>',<q-args>)
 endfunction
 
 augroup rake_command
