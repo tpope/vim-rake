@@ -103,6 +103,7 @@ let s:projections = {
       \ '*': {},
       \ 'lib/*.rb': {'type': 'lib', 'alternate': [
       \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
+      \   'test/{dirname}/test_{basename}.rb',
       \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
       \ 'test/test_helper.rb': {'type': 'test'},
       \ 'test/*_test.rb': {
@@ -110,6 +111,9 @@ let s:projections = {
       \   'alternate': 'lib/{}.rb'},
       \ 'test/lib/*_test.rb': {'alternate': 'lib/{}.rb'},
       \ 'test/unit/*_test.rb': {'alternate': 'lib/{}.rb'},
+      \ 'test/**/test_*.rb': {
+      \   'type': 'test',
+      \   'alternate': 'lib/{dirname}/{basename}.rb'},
       \ 'spec/spec_helper.rb': {'type': 'spec'},
       \ 'spec/*_spec.rb': {
       \   'type': 'spec',
