@@ -71,6 +71,13 @@ COMMANDS                                        *rake-commands*
 Set g:rake_legacy to 1 to enable the old, legacy R command variants.  This
 option will eventually be removed.
 
+                                                *rake-ruby-c-extensions*
+This plugin supports Ruby C extension files usually located under ext/.
+For those C files 'path' is enhanced with correct Ruby include directory.
+With this you can use |i_CTRL-X_CTRL-I| completion and |[i|, |[d| families of
+mappings and commands on all the macros and functions provided by ruby.h
+header file.
+
 ABOUT                                           *rake-about*
 
 Grab the latest version or report a bug on GitHub:

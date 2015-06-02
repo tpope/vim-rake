@@ -208,7 +208,21 @@ function! s:project_path(...) dict abort
   return join([self._root]+a:000,'/')
 endfunction
 
-call s:add_methods('project',['path'])
+function! s:project_ruby_include_path() dict abort
+  if !has_key(self, '_ruby_include_path')
+    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+    let cwd = getcwd()
+    try
+      execute cd fnameescape(self.path())
+      let self._ruby_include_path = system('ruby -rrbconfig -e "print RbConfig::CONFIG[\"rubyhdrdir\"] || RbConfig::CONFIG[\"topdir\"]"')
+    finally
+      execute cd fnameescape(cwd)
+    endtry
+  endif
+  return self._ruby_include_path
+endfunction
+
+call s:add_methods('project',['path','ruby_include_path'])
 
 " }}}1
 " Rake {{{1
@@ -322,6 +336,10 @@ augroup rake_path
         \ if &suffixesadd =~# '\.rb\>' && stridx(&path, escape(s:project().path('lib'),', ')) < 0 |
         \   let &l:path = escape(s:project().path('lib'),', ')
         \     . ',' . escape(s:project().path('ext'),', ') . ',' . &path |
+        \ endif
+  autocmd User Rake
+        \ if &filetype ==# 'c' || &filetype ==# 'cpp' |
+        \   let &l:path = escape(s:project().ruby_include_path(),', ') . ',' . &path |
         \ endif
 augroup END
 
