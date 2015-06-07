@@ -342,6 +342,12 @@ augroup rake_path
         \   let &l:path .= ',' . escape(s:project().ruby_include_path(),', ') |
         \   let &l:tags .= ',' . escape(s:project().ruby_include_path().'/tags',', ') |
         \ endif
+  autocmd FileType c,cpp
+        \ if !empty(getbufvar('#', 'rake_root')) && getbufvar('#', '&filetype') =~# '^\%(c\|cpp\)$' |
+        \   let b:rake_root = getbufvar('#', 'rake_root') |
+        \   let &l:path = getbufvar('#', '&path') |
+        \   let &l:tags = getbufvar('#', '&tags') |
+        \ endif
 augroup END
 
 " }}}1
