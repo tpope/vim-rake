@@ -339,8 +339,8 @@ augroup rake_path
         \ endif
   autocmd User Rake
         \ if &filetype ==# 'c' || &filetype ==# 'cpp' |
-        \   let &l:path .= ',' . escape(s:project().ruby_include_path(),', ') |
-        \   let &l:tags .= ',' . escape(s:project().ruby_include_path().'/tags',', ') |
+        \   let &l:path = &path . ',' . escape(s:project().ruby_include_path(),', ') |
+        \   let &l:tags = &tags . ',' . escape(s:project().ruby_include_path().'/tags',', ') |
         \ endif
 augroup END
 
