@@ -102,10 +102,15 @@ augroup END
 let s:projections = {
       \ '*': {},
       \ 'lib/*.rb': {'type': 'lib', 'alternate': [
+      \   'test/test_{}.rb', 'test/lib/test_{}.rb', 'test/unit/test_{}.rb',
       \   'test/{}_test.rb', 'test/lib/{}_test.rb', 'test/unit/{}_test.rb',
       \   'test/{dirname}/test_{basename}.rb',
       \   'spec/{}_spec.rb', 'spec/lib/{}_spec.rb', 'spec/unit/{}_spec.rb']},
       \ 'test/test_helper.rb': {'type': 'test'},
+      \ 'test/minitest_helper.rb': {'type': 'test'},
+      \ 'test/test_*.rb': {
+      \   'type': 'test',
+      \   'alternate': 'lib/{}.rb'},
       \ 'test/*_test.rb': {
       \   'type': 'test',
       \   'alternate': 'lib/{}.rb'},
