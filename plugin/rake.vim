@@ -152,7 +152,7 @@ function! s:ProjectionistDetect() abort
     else
       let projections['test/*.rb'] = {'dispatch': ruby + ['-Itest', '{file}']}
     endif
-    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}']
+    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}`=v:lnum ? ":".v:lnum : ""`']
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
