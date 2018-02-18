@@ -125,11 +125,11 @@ let s:projections = {
 
 function! s:binstub(root, cmd) abort
   if !has('win32') && a:root !~# '\s' && executable(a:root.'/bin/'.a:cmd)
-    return ['bin/'.a:cmd]
+    return 'bin/'.a:cmd
   elseif filereadable(a:root.'/Gemfile')
-    return ['bundle', 'exec', a:cmd]
+    return 'bundle exec '.a:cmd
   else
-    return [a:cmd]
+    return a:cmd
   endif
 endfunction
 
@@ -143,22 +143,22 @@ function! s:ProjectionistDetect() abort
     if isdirectory(b:rake_root.'/spec')
       let spec = 1
     endif
-    let projections['*'].make = split(s:project().makeprg())
+    let projections['*'].make = s:project().makeprg()
     let projections['Rakefile'].dispatch = projections['*'].make
-    let projections['rakelib/*.rake'].dispatch = projections['*'].make + ['{}']
+    let projections['rakelib/*.rake'].dispatch = projections['*'].make . ' {}'
     let ruby = s:binstub(b:rake_root, 'ruby')
-    if ruby ==# ['ruby']
-      let projections['test/*.rb'] = {'dispatch': ruby + ['-Itest', '-Ilib', '{file}']}
+    if ruby ==# 'ruby'
+      let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest -Ilib {file}'}
     else
-      let projections['test/*.rb'] = {'dispatch': ruby + ['-Itest', '{file}']}
+      let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest {file}'}
     endif
-    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') + ['{file}`=v:lnum ? ":".v:lnum : ""`']
+    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') . ' {file}`=v:lnum ? ":".v:lnum : ""`'
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
     let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'type': 'lib'}
     if gemspec !=# 'Gemfile'
-      let projections[gemspec].dispatch = ['gem', 'build', '{file}']
+      let projections[gemspec].dispatch = 'gem build {file}'
     endif
     call projectionist#append(b:rake_root, projections)
     let secondary = {
