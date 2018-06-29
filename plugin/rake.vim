@@ -45,12 +45,16 @@ let s:abstract_prototype = {}
 " }}}1
 " Initialization {{{1
 
+function! s:has(root, file) abort
+  return call(a:file =~# '/$' ? 'isdirectory' : 'filereadable', [a:root . '/' . a:file])
+endfunction
+
 function! s:find_root(path) abort
   let root = s:shellslash(fnamemodify(a:path, ':p:s?[\/]$??'))
   let previous = ''
   while root !=# previous && root !~# '^\%(\a\+:\)\=/*$\|^\.$'
-    if filereadable(root.'/Rakefile') || (isdirectory(root.'/lib') && filereadable(root.'/Gemfile'))
-      if filereadable(root.'/config/environment.rb')
+    if s:has(root, 'Rakefile') || (s:has(root, 'lib') && s:has(root, 'Gemfile'))
+      if s:has(root, 'config/environment.rb')
         return ''
       else
         return root
@@ -132,10 +136,10 @@ function! s:ProjectionistDetect() abort
   call s:Detect(get(g:, 'projectionist_file', ''))
   if exists('b:rake_root')
     let projections = deepcopy(s:projections)
-    if isdirectory(b:rake_root.'/test')
+    if s:has(b:rake_root, 'test/')
       let test = 1
     endif
-    if isdirectory(b:rake_root.'/spec')
+    if s:has(b:rake_root, 'spec/')
       let spec = 1
     endif
     let projections['*'].make = s:project().makeprg()
