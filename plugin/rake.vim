@@ -46,9 +46,9 @@ let s:abstract_prototype = {}
 " Initialization {{{1
 
 function! s:find_root(path) abort
-  let root = s:shellslash(simplify(fnamemodify(a:path, ':p:s?[\/]$??')))
+  let root = s:shellslash(fnamemodify(a:path, ':p:s?[\/]$??'))
   let previous = ''
-  while root !=# previous && root !=# '/'
+  while root !=# previous && root !~# '^\%(\a\+:\)\=/*$\|^\.$'
     if filereadable(root.'/Rakefile') || (isdirectory(root.'/lib') && filereadable(root.'/Gemfile'))
       if filereadable(root.'/config/environment.rb')
         return ''
