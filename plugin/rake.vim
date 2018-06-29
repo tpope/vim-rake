@@ -207,34 +207,40 @@ function! s:project_path(...) dict abort
   return join([self._root]+a:000,'/')
 endfunction
 
+function! s:project_real(...) dict abort
+  return join([self._root]+a:000,'/')
+endfunction
+
 function! s:project_ruby_include_path() dict abort
-  if !has_key(self, '_ruby_include_path')
+  if !has_key(self, '_ruby_include_path') && len(self.real())
     let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
     let cwd = getcwd()
     try
-      execute cd fnameescape(self.path())
+      execute cd fnameescape(self.real())
       let self._ruby_include_path = system('ruby -rrbconfig -e "print RbConfig::CONFIG[\"rubyhdrdir\"] || RbConfig::CONFIG[\"topdir\"]"')
     finally
       execute cd fnameescape(cwd)
     endtry
   endif
-  return self._ruby_include_path
+  return get(self, '_ruby_include_path', '')
 endfunction
 
-call s:add_methods('project',['path','ruby_include_path'])
+call s:add_methods('project',['path','real','ruby_include_path'])
 
 " }}}1
 " Rake {{{1
 
 function! s:project_makeprg() dict abort
-  if executable(self.path('bin/rake'))
+  if executable(self.real('bin/rake'))
     return 'bin/rake'
-  elseif filereadable(self.path('bin/rake'))
+  elseif filereadable(self.real('bin/rake'))
     return 'ruby bin/rake'
-  elseif filereadable(self.path('Gemfile'))
+  elseif filereadable(self.real('Gemfile'))
     return 'bundle exec rake'
-  else
+  elseif len(self.real())
     return 'rake'
+  else
+    return ''
   endif
 endfunction
 
@@ -247,7 +253,7 @@ function! s:Rake(bang, arg) abort
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let cwd = getcwd()
   try
-    execute cd fnameescape(s:project().path())
+    execute cd fnameescape(s:project().real())
     if !empty(findfile('compiler/rake.vim', escape(&rtp, ' ')))
       compiler rake
     else
@@ -297,7 +303,7 @@ function! s:project_tasks() dict abort
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let cwd = getcwd()
   try
-    execute cd fnameescape(self.path())
+    execute cd fnameescape(self.real())
     let lines = split(system(self.makeprg() . ' -T'), "\n")
   finally
     execute cd fnameescape(cwd)
@@ -319,7 +325,7 @@ endfunction
 
 augroup rake_command
   autocmd!
-  autocmd User Rake call s:define_rake()
+  autocmd User Rake if len(s:project().makeprg()) | call s:define_rake() | endif
 augroup END
 
 " }}}1
@@ -337,7 +343,7 @@ augroup rake_path
         \     . ',' . escape(s:project().path('ext'),', ') . ',' . &path |
         \ endif
   autocmd User Rake
-        \ if &filetype ==# 'c' || &filetype ==# 'cpp' |
+        \ if len(s:project().ruby_include_path()) && &filetype =~# '^c\%(pp\)\=$' |
         \   let &l:path = &path . ',' . escape(s:project().ruby_include_path(),', ') |
         \   let &l:tags = &tags . ',' . escape(s:project().ruby_include_path().'/tags',', ') |
         \ endif
