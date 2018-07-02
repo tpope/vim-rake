@@ -45,8 +45,29 @@ let s:abstract_prototype = {}
 " }}}1
 " Initialization {{{1
 
+function! s:fcall(fn, path, ...) abort
+  let ns = matchstr(a:path, '^\a\a\+\ze:')
+  if len(ns) && exists('*' . ns . '#' . a:fn)
+    return call(ns . '#' . a:fn, [a:path] + a:000)
+  else
+    return call(a:fn, [a:path] + a:000)
+  endif
+endfunction
+
+function! s:real(file) abort
+  let pre = substitute(matchstr(a:file, '^\a\a\+\ze:'), '^.', '\u&', '')
+  if empty(pre)
+    let path = a:file
+  elseif exists('*' . pre . 'Path')
+    let path = {pre}Path(a:file)
+  else
+    return ''
+  endif
+  return exists('+shellslash') && !&shellslash ? tr(path, '/', '\') : path
+endfunction
+
 function! s:has(root, file) abort
-  return call(a:file =~# '/$' ? 'isdirectory' : 'filereadable', [a:root . '/' . a:file])
+  return s:fcall(a:file =~# '/$' ? 'isdirectory' : 'filereadable', a:root . '/' . a:file)
 endfunction
 
 function! s:find_root(path) abort
@@ -142,19 +163,22 @@ function! s:ProjectionistDetect() abort
     if s:has(b:rake_root, 'spec/')
       let spec = 1
     endif
-    let projections['*'].make = s:project().makeprg()
-    let projections['Rakefile'].dispatch = projections['*'].make
-    let projections['rakelib/*.rake'].dispatch = projections['*'].make . ' {}'
-    let ruby = s:binstub(b:rake_root, 'ruby')
-    if ruby ==# 'ruby'
-      let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest -Ilib {file}'}
-    else
-      let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest {file}'}
+    let real_root = s:real(b:rake_root)
+    if len(real_root)
+      let projections['*'].make = s:project().makeprg()
+      let projections['Rakefile'].dispatch = projections['*'].make
+      let projections['rakelib/*.rake'].dispatch = projections['*'].make . ' {}'
+      let ruby = s:binstub(real_root, 'ruby')
+      if ruby ==# 'ruby'
+        let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest -Ilib {file}'}
+      else
+        let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest {file}'}
+      endif
+      let projections['spec/*_spec.rb'].dispatch = s:binstub(real_root, 'rspec') . ' {file}`=v:lnum ? ":".v:lnum : ""`'
     endif
-    let projections['spec/*_spec.rb'].dispatch = s:binstub(b:rake_root, 'rspec') . ' {file}`=v:lnum ? ":".v:lnum : ""`'
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
-    let gemspec = fnamemodify(get(split(glob(b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
+    let gemspec = fnamemodify(get(split(s:fcall('glob', b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'type': 'lib'}
     if gemspec !=# 'Gemfile'
       let projections[gemspec].dispatch = 'gem build {file}'
@@ -208,7 +232,7 @@ function! s:project_path(...) dict abort
 endfunction
 
 function! s:project_real(...) dict abort
-  return join([self._root]+a:000,'/')
+  return s:real(join([self._root]+a:000,'/'))
 endfunction
 
 function! s:project_ruby_include_path() dict abort
@@ -335,12 +359,16 @@ if !exists('g:did_load_ftplugin')
   filetype plugin on
 endif
 
+function! s:path_addition(file) abort
+  return escape(substitute(s:project().path(a:file), '^\a\a\+:', '+&', ''), ', ')
+endfunction
+
 augroup rake_path
   autocmd!
   autocmd User Rake
-        \ if &suffixesadd =~# '\.rb\>' && stridx(&path, escape(s:project().path('lib'),', ')) < 0 |
-        \   let &l:path = escape(s:project().path('lib'),', ')
-        \     . ',' . escape(s:project().path('ext'),', ') . ',' . &path |
+        \ if &suffixesadd =~# '\.rb\>' && stridx(&path, s:path_addition('lib')) < 0 |
+        \   let &l:path = s:path_addition('lib')
+        \     . ',' . s:path_addition('ext') . ',' . &path |
         \ endif
   autocmd User Rake
         \ if len(s:project().ruby_include_path()) && &filetype =~# '^c\%(pp\)\=$' |
