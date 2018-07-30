@@ -176,7 +176,8 @@ function! s:ProjectionistDetect() abort
       else
         let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest {file}'}
       endif
-      let projections['spec/*_spec.rb'].dispatch = s:binstub(real_root, 'rspec') . ' {file}`=v:lnum ? ":".v:lnum : ""`'
+      let projections['spec/*_spec.rb'].dispatch =
+            \ s:binstub(real_root, 'rspec') . ' %:s/$/\=exists("l#") ? ":".l# : ""/{vim}'
     endif
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
@@ -188,7 +189,9 @@ function! s:ProjectionistDetect() abort
     call projectionist#append(b:rake_root, projections)
     let secondary = {
           \ 'test/*_test.rb': exists('test') ? {'type': 'spec'} : {},
-          \ 'spec/*_spec.rb': exists('spec') ? {'type': 'test'} : {}}
+          \ 'spec/*_spec.rb': extend(
+          \ len(real_root) ? {"dispatch": s:binstub(real_root, 'rspec') . ' {file}'} : {},
+          \ exists('spec') ? {'type': 'test'} : {})}
     call filter(secondary, '!empty(v:val)')
     if !empty(secondary)
       call projectionist#append(b:rake_root, secondary)
