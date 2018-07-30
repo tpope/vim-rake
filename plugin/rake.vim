@@ -311,8 +311,8 @@ function! s:Rake(bang, arg) abort
 endfunction
 
 function! s:RakeComplete(A, L, P, ...) abort
-  let project = a:0 ? a:1 : s:project()
-  return projectionist#completion_filter(project.tasks(), a:A, ':')
+  let root = a:0 ? a:1 : b:rake_root
+  return projectionist#completion_filter(s:Tasks(root), a:A, ':')
 endfunction
 
 function! CompilerComplete_rake(A, L, P) abort
@@ -324,16 +324,17 @@ function! CompilerComplete_rake(A, L, P) abort
   if path ==# get(b:, 'rails_root', 'x') && exists('*rails#complete_rake')
     return rails#complete_rake(a:A, a:L, a:P)
   else
-    return s:RakeComplete(a:A, a:L, a:P, s:project(path))
+    return s:RakeComplete(a:A, a:L, a:P, path)
   endif
 endfunction
 
-function! s:project_tasks() dict abort
+function! s:Tasks(...) abort
+  let project = s:project(a:0 ? a:1 : b:rake_root)
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let cwd = getcwd()
   try
-    execute cd fnameescape(self.real())
-    let lines = split(system(self.makeprg() . ' -T'), "\n")
+    execute cd fnameescape(project.real())
+    let lines = split(system(project.makeprg() . ' -T'), "\n")
   finally
     execute cd fnameescape(cwd)
   endtry
@@ -344,8 +345,6 @@ function! s:project_tasks() dict abort
   call filter(lines,'v:val != ""')
   return lines
 endfunction
-
-call s:add_methods('project', ['tasks'])
 
 function! s:define_rake() abort
   command! -buffer -bar -bang -nargs=? -complete=customlist,s:RakeComplete Rake
