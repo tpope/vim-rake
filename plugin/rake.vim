@@ -77,7 +77,7 @@ function! s:find_root(path) abort
   let previous = ''
   while root !=# previous && root !~# '^\%(\a\+:\)\=/*$\|^\.$'
     if s:has(root, 'Rakefile') || (s:has(root, 'lib') && s:has(root, 'Gemfile'))
-      if s:has(root, 'config/environment.rb')
+      if s:has(root, 'config/environment.rb') && s:has(root, 'app')
         return ''
       else
         return root
