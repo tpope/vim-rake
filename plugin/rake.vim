@@ -159,12 +159,8 @@ function! s:ProjectionistDetect() abort
   call s:Detect(get(g:, 'projectionist_file', ''))
   if exists('b:rake_root')
     let projections = deepcopy(s:projections)
-    if s:has(b:rake_root, 'test/')
-      let test = 1
-    endif
-    if s:has(b:rake_root, 'spec/')
-      let spec = 1
-    endif
+    let test = s:has(b:rake_root, 'test/')
+    let spec = s:has(b:rake_root, 'spec/')
     let real_root = s:real(b:rake_root)
     if len(real_root)
       let projections['*'].make = s:project().makeprg()
@@ -179,8 +175,8 @@ function! s:ProjectionistDetect() abort
       let projections['spec/*_spec.rb'].dispatch =
             \ s:binstub(real_root, 'rspec') . ' %:s/$/\=exists("l#") ? ":".l# : ""/{vim|nothing}'
     endif
-    call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
-    call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
+    call filter(projections['lib/*.rb'].alternate, 'get(l:, v:val[0:3])')
+    call filter(projections, 'v:key[4] !=# "/" || get(l:, v:key[0:3])')
     let gemspec = fnamemodify(get(split(s:fcall('glob', b:rake_root.'/*.gemspec'), "\n"), 0, 'Gemfile'), ':t')
     let projections[gemspec] = {'type': 'lib'}
     if gemspec !=# 'Gemfile'
@@ -188,10 +184,10 @@ function! s:ProjectionistDetect() abort
     endif
     call projectionist#append(b:rake_root, projections)
     let secondary = {
-          \ 'test/*_test.rb': exists('test') ? {'type': 'spec'} : {},
+          \ 'test/*_test.rb': test ? {'type': 'spec'} : {},
           \ 'spec/*_spec.rb': extend(
           \ len(real_root) ? {"dispatch": s:binstub(real_root, 'rspec') . ' {file}'} : {},
-          \ exists('spec') ? {'type': 'test'} : {})}
+          \ spec ? {'type': 'test'} : {})}
     call filter(secondary, '!empty(v:val)')
     if !empty(secondary)
       call projectionist#append(b:rake_root, secondary)
