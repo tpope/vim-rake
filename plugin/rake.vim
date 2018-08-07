@@ -177,7 +177,7 @@ function! s:ProjectionistDetect() abort
         let projections['test/*.rb'] = {'dispatch': ruby . ' -Itest {file}'}
       endif
       let projections['spec/*_spec.rb'].dispatch =
-            \ s:binstub(real_root, 'rspec') . ' %:s/$/\=exists("l#") ? ":".l# : ""/{vim}'
+            \ s:binstub(real_root, 'rspec') . ' %:s/$/\=exists("l#") ? ":".l# : ""/{vim|nothing}'
     endif
     call filter(projections['lib/*.rb'].alternate, 'exists(v:val[0:3])')
     call filter(projections, 'v:key[4] !=# "/" || exists(v:key[0:3])')
