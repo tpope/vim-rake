@@ -237,13 +237,16 @@ function! s:project_real(...) dict abort
 endfunction
 
 function! s:project_ruby_include_path() dict abort
-  if !has_key(self, '_ruby_include_path') && len(self.real())
-    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+  let real = self.real()
+  if !has_key(self, '_ruby_include_path') && len(real) && isdirectory(real)
+    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
     let cwd = getcwd()
     try
-      execute cd fnameescape(self.real())
+      execute cd fnameescape(real)
       let self._ruby_include_path = system('ruby -rrbconfig -e ' . shellescape(
-            \ 'print RbConfig::CONFIG["rubyhdrdir"] || RbConfig::CONFIG["topdir"]'))
+            \ 'print RbConfig::CONFIG[:rubyhdrdir.to_s] || RbConfig::CONFIG[:topdir.to_s]'))
+    catch
+      let self._ruby_include_path = ''
     finally
       execute cd fnameescape(cwd)
     endtry
