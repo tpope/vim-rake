@@ -3,7 +3,7 @@
 " Version:      2.0
 " GetLatestVimScripts: 3669 1 :AutoInstall: rake.vim
 
-if exists('g:loaded_rake') || &cp || v:version < 700
+if exists('g:loaded_rake') || &cp || v:version < 800
   finish
 endif
 let g:loaded_rake = 1
@@ -199,7 +199,7 @@ endfunction
 function! s:project_ruby_include_path() dict abort
   let real = self.real()
   if !has_key(self, '_ruby_include_path') && len(real) && isdirectory(real)
-    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
+    let cd = haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
     let cwd = getcwd()
     try
       execute cd fnameescape(real)
@@ -239,7 +239,7 @@ function! s:Rake(bang, arg) abort
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
   let old_compiler = get(b:, 'current_compiler', '')
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+  let cd = haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
   let cwd = getcwd()
   try
     execute cd fnameescape(s:project().real())
@@ -290,7 +290,7 @@ endfunction
 
 function! s:Tasks(...) abort
   let project = s:project(a:0 ? a:1 : b:rake_root)
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+  let cd = haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd'
   let cwd = getcwd()
   try
     execute cd fnameescape(project.real())
