@@ -8,6 +8,11 @@ if exists('g:loaded_rake') || &cp || v:version < 800
 endif
 let g:loaded_rake = 1
 
+" Turn on $LOAD_PATH detection in the ruby ftplugin
+if !exists('g:ruby_exec')
+  let g:ruby_exec = 1
+endif
+
 if !exists('g:dispatch_compilers')
   let g:dispatch_compilers = {}
 endif
